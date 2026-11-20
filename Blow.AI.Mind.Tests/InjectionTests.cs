@@ -24,10 +24,11 @@ public class InjectionTests
         injection.Technique.ShouldNotBe(ObfuscationTechnique.None);
         injection.Marker.ShouldStartWith("BAM-");
         injection.Sheet.ShouldBe(UserSecretsTemplate.UsersSheet);
-        injection.Cells.ShouldAllBe(c => c.StartsWith('N'));
+        injection.Placement.ShouldBe(InjectionPlacement.Cell);
+        injection.Locations.ShouldAllBe(c => c.StartsWith('N'));
 
         var users = TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!;
-        var payload = string.Join(" ", injection.Cells.Select(cell => users.Rows[int.Parse(cell[1..]) - 2][UserSecretsTemplate.NotesColumn - 1]));
+        var payload = string.Join(" ", injection.Locations.Select(cell => users.Rows[int.Parse(cell[1..]) - 2][UserSecretsTemplate.NotesColumn - 1]));
         ContainsMarker(payload, injection).ShouldBeTrue();
     }
 
@@ -38,7 +39,7 @@ public class InjectionTests
 
         file.Injections.Select(i => i.InjectionId).Order().ShouldBe(InjectionLibrary.BuiltIn.Select(d => d.Id).Order());
         file.Injections.Select(i => i.Marker).ShouldBeUnique();
-        file.Injections.SelectMany(i => i.Cells).ShouldBeUnique();
+        file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();
     }
 
     [Test]
@@ -48,7 +49,7 @@ public class InjectionTests
             .WithInjections(o => o.WithDifficulty(Difficulty.Plain)));
 
         var notes = TestHelpers.CellsText(TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!, UserSecretsTemplate.NotesColumn - 1);
-        file.Injections.ShouldAllBe(i => i.Technique == ObfuscationTechnique.None && i.Cells.Count == 1);
+        file.Injections.ShouldAllBe(i => i.Technique == ObfuscationTechnique.None && i.Locations.Count == 1);
         file.Injections.ShouldAllBe(i => notes.Contains(i.Marker));
     }
 

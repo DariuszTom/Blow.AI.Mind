@@ -43,6 +43,6 @@ public class CryptographicRandomTests
         var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(count)
             .WithInjections(options => options.WithDifficulty(Difficulty.Plain)));
         file.Injections.Count.ShouldBe(count);
-        file.Injections.SelectMany(i => i.Cells).ShouldBeUnique();
+        file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();
     }
 }

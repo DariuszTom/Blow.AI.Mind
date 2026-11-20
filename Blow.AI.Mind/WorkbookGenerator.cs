@@ -106,10 +106,16 @@ public sealed class WorkbookGenerator
         return this;
     }
 
-    /// <summary>Plants one randomly chosen injection per file (default difficulty: <see cref="Difficulty.Obfuscated"/>).</summary>
+    /// <summary>
+    /// Plants one randomly chosen injection per file in one randomly chosen placement from
+    /// <see cref="InjectionOptions.InPlacement"/> (default: <see cref="InjectionPlacement.Cell"/>; default difficulty: <see cref="Difficulty.Obfuscated"/>).
+    /// </summary>
     public WorkbookGenerator WithInjection(Action<InjectionOptions>? configure = null) => SetInjections(InjectionMode.Single, configure);
 
-    /// <summary>Plants every matching injection in every file (default difficulty: <see cref="Difficulty.Obfuscated"/>).</summary>
+    /// <summary>
+    /// Plants every matching injection in every configured placement of every file
+    /// (default placement: <see cref="InjectionPlacement.Cell"/>; default difficulty: <see cref="Difficulty.Obfuscated"/>).
+    /// </summary>
     public WorkbookGenerator WithInjections(Action<InjectionOptions>? configure = null) => SetInjections(InjectionMode.All, configure);
 
     /// <summary>Uses injection definitions from a directory instead of the built-in library.</summary>
@@ -200,8 +206,9 @@ public sealed class WorkbookGenerator
             return [];
         }
 
+        var placements = _injectionOptions.EffectivePlacements;
         var matching = (_customInjections ?? InjectionLibrary.BuiltIn)
-            .Where(d => d.Placements.Contains(InjectionPlacement.Cell) && _injectionOptions.Matches(d))
+            .Where(d => d.Placements.Any(placements.Contains) && _injectionOptions.Matches(d))
             .ToList();
         if (matching.Count == 0)
         {
@@ -218,7 +225,7 @@ public sealed class WorkbookGenerator
         using var workbook = new XLWorkbook();
         var target = _template.Build(workbook, new TemplateContext(faker, _rows, _emailDomains));
 
-        var records = PlantInjections(target, injections, random);
+        var records = PlantInjections(workbook, target, injections, random);
 
         byte[] bytes;
         using (var plain = new MemoryStream())
@@ -243,45 +250,33 @@ public sealed class WorkbookGenerator
         return (bytes, file);
     }
 
-    private List<InjectionRecord> PlantInjections(InjectionTarget target, IReadOnlyList<InjectionDefinition> injections, Randomizer random)
+    private List<InjectionRecord> PlantInjections(XLWorkbook workbook, InjectionTarget target, IReadOnlyList<InjectionDefinition> injections, Randomizer random)
     {
-        var records = new List<InjectionRecord>();
         if (injections.Count == 0)
         {
-            return records;
+            return [];
         }
 
-        var selected = _injectionMode == InjectionMode.Single ? [random.ListItem(injections.ToList())] : injections;
-        var payloads = selected.Select(definition =>
+        var placements = _injectionOptions.EffectivePlacements;
+        IEnumerable<(InjectionDefinition Definition, InjectionPlacement Placement)> selected;
+        if (_injectionMode == InjectionMode.Single)
+        {
+            var definition = random.ListItem(injections.ToList());
+            selected = [(definition, random.ListItem(placements.Where(definition.Placements.Contains).ToList()))];
+        }
+        else
+        {
+            selected = injections.SelectMany(d => placements.Where(d.Placements.Contains).Select(p => (d, p)));
+        }
+
+        var planned = selected.Select(s =>
         {
             var marker = $"BAM-{Guid.NewGuid():N}".ToUpperInvariant();
-            return (Definition: definition, Marker: marker,
-                Payload: InjectionObfuscator.Apply(definition.Text, marker, _injectionOptions.Difficulty, random));
+            return new PlannedInjection(s.Definition, s.Placement, marker,
+                InjectionObfuscator.Apply(s.Definition.Text, marker, _injectionOptions.Difficulty, random));
         }).ToList();
-        var requiredRows = payloads.Sum(p => p.Payload.Cells.Count);
-        var lastStart = target.LastRow - requiredRows + 1;
-        if (lastStart < target.FirstRow)
-        {
-            throw new InvalidOperationException($"Not enough rows ({_rows}) to place {selected.Count} injection(s). Increase WithRows().");
-        }
 
-        var startRow = random.Number(target.FirstRow, lastStart);
-        foreach (var (definition, marker, payload) in payloads)
-        {
-            var cells = new List<string>(payload.Cells.Count);
-            for (var i = 0; i < payload.Cells.Count; i++)
-            {
-                var cell = target.Sheet.Cell(startRow + i, target.Column);
-                cell.Value = payload.Cells[i];
-                cells.Add(cell.Address.ToStringRelative());
-            }
-
-            startRow += payload.Cells.Count;
-            records.Add(new InjectionRecord(definition.Id, definition.Category, marker, _injectionOptions.Difficulty,
-                payload.Technique, InjectionPlacement.Cell, target.Sheet.Name, cells));
-        }
-
-        return records;
+        return new InjectionPlanter(workbook, target, random).Plant(planned, _injectionOptions.Difficulty);
     }
 
 }

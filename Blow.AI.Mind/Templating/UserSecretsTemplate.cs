@@ -17,6 +17,8 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
     ];
 
     internal const int NotesColumn = 14;
+    internal const int HiddenColumn = 15;
+    internal const int CommentColumn = 2;
 
     private static readonly string[] Notes =
     [
@@ -90,7 +92,7 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
         StyleTable(users, lastRow);
         BuildSummary(workbook, context.Rows, mfaCount, roleCounts);
 
-        return new InjectionTarget(users, NotesColumn, 2, lastRow);
+        return new InjectionTarget(users, NotesColumn, HiddenColumn, CommentColumn, 2, lastRow);
     }
 
     private static void StyleTable(IXLWorksheet sheet, int lastRow)

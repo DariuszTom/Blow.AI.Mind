@@ -15,6 +15,32 @@ public sealed class InjectionOptions
     /// <summary>Only use injections in these languages (empty = all).</summary>
     public ISet<string> Languages { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Workbook locations to use. Empty means <see cref="InjectionPlacement.Cell"/> only.</summary>
+    public ISet<InjectionPlacement> Placements { get; } = new HashSet<InjectionPlacement>();
+
+    /// <summary>Adds workbook locations; several can be combined, e.g. <c>InPlacement(Comment, HiddenSheet)</c>.</summary>
+    public InjectionOptions InPlacement(params InjectionPlacement[] placements)
+    {
+        ArgumentNullException.ThrowIfNull(placements);
+        foreach (var placement in placements)
+        {
+            if (!Enum.IsDefined(placement))
+            {
+                throw new ArgumentOutOfRangeException(nameof(placements), placement, "Unsupported injection placement.");
+            }
+
+            Placements.Add(placement);
+        }
+
+        return this;
+    }
+
+    /// <summary>Uses every supported workbook location.</summary>
+    public InjectionOptions InAllPlacements() => InPlacement(Enum.GetValues<InjectionPlacement>());
+
+    internal IReadOnlyCollection<InjectionPlacement> EffectivePlacements =>
+        Placements.Count == 0 ? [InjectionPlacement.Cell] : Placements.Order().ToList();
+
     public InjectionOptions WithDifficulty(Difficulty difficulty)
     {
         Difficulty = difficulty;

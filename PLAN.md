@@ -36,7 +36,7 @@ Pakiet nie będzie implementował endpointów ani integracji z konkretną aplika
 - **Zabezpieczony plik:** skoroszyt zaszyfrowany losowym hasłem do otwarcia.
 - Umożliwić łączenie profili, w tym generowanie zaszyfrowanego skoroszytu zawierającego prompt injection. Taka zawartość nie będzie dostępna bez odtworzenia hasła.
 - Opcjonalnie dodać scenariusze mylących danych oraz tematów wrażliwych, oddzielone od prompt injection.
-- Określić wspierane miejsca umieszczania scenariuszy, zaczynając od komórek; w kolejnych etapach: komentarze, ukryte i „very hidden” arkusze, ukryte wiersze/kolumny, tekst niewidoczny (np. biały na białym), właściwości dokumentu, nazwy zdefiniowane, walidacja danych, nagłówki i stopki.
+- Wspierane miejsca (`InjectionPlacement`, można wybrać kilka naraz przez `InPlacement(...)` lub `InAllPlacements()`): `Cell` (domyślne), `Comment`, `HiddenCell`, `HiddenSheet`, `DocumentProperties`, `DefinedName`. W kolejnych etapach: arkusze „very hidden”, walidacja danych, nagłówki i stopki, hiperłącza, kształty.
 
 ### 2a. Biblioteka prompt injection
 

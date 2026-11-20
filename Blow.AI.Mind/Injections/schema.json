@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Blow.AI.Mind injection definition",
   "type": "object",
@@ -13,8 +13,8 @@
     "placements": {
       "type": "array",
       "minItems": 1,
-      "items": { "enum": [ "Cell" ] },
-      "default": [ "Cell" ]
+      "items": { "enum": [ "Cell", "Comment", "HiddenCell", "HiddenSheet", "DocumentProperties", "DefinedName" ] },
+      "default": [ "Cell", "Comment", "HiddenCell", "HiddenSheet", "DocumentProperties", "DefinedName" ]
     },
     "tags": { "type": "array", "items": { "type": "string" } }
   }

@@ -23,6 +23,9 @@ public abstract class WorkbookTemplate
 }
 
 /// <summary>
-/// Free-text column of a template where injection scenarios may be placed.
+/// Locations of a template sheet where injection scenarios may be placed.
 /// </summary>
-internal sealed record InjectionTarget(IXLWorksheet Sheet, int Column, int FirstRow, int LastRow);
+/// <param name="Column">Visible free-text column.</param>
+/// <param name="HiddenColumn">Empty column that is hidden when used.</param>
+/// <param name="CommentColumn">Data column whose cells receive notes.</param>
+internal sealed record InjectionTarget(IXLWorksheet Sheet, int Column, int HiddenColumn, int CommentColumn, int FirstRow, int LastRow);
