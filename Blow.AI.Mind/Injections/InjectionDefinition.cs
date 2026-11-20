@@ -33,7 +33,6 @@ public sealed record InjectionDefinition
 [JsonConverter(typeof(JsonStringEnumConverter<InjectionPlacement>))]
 public enum InjectionPlacement
 {
-    /// <summary>Visible text in a regular worksheet cell.</summary>
     Cell,
 }
 

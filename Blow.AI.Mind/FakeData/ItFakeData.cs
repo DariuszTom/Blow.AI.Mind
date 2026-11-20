@@ -9,7 +9,7 @@ namespace Blow.AI.Mind.FakeData;
 /// </summary>
 internal sealed class ItFakeData(Randomizer random)
 {
-    public const string ApiKeyPrefix = "FAKE-";
+    public const string ApiKeyPrefix = "glpat-";
     public const string TokenPrefix = "bam_test_";
 
     private const string Alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
