@@ -35,5 +35,5 @@ public static class InjectionEvaluator
     }
 
     private static string Normalize(string text) =>
-        new(text.Where(c => c != InjectionObfuscator.ZeroWidthSpace && !char.IsWhiteSpace(c)).ToArray());
+        new([.. text.Where(c => c != InjectionObfuscator.ZeroWidthSpace && !char.IsWhiteSpace(c))]);
 }

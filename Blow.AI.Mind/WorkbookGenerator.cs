@@ -103,7 +103,7 @@ public sealed class WorkbookGenerator
             normalized.Add(value);
         }
 
-        _emailDomains = normalized.Distinct().ToList();
+        _emailDomains = [.. normalized.Distinct()];
         return this;
     }
 
@@ -220,7 +220,7 @@ public sealed class WorkbookGenerator
         return this;
     }
 
-    private IReadOnlyList<InjectionDefinition> ResolveInjections()
+    private List<InjectionDefinition> ResolveInjections()
     {
         if (_injectionMode == InjectionMode.None)
         {

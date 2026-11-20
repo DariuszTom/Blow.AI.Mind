@@ -135,6 +135,6 @@ public static class InjectionLibrary
         }
 
         EnsureUniqueIds(result);
-        return result.OrderBy(d => d.Id, StringComparer.Ordinal).ToList();
+        return [.. result.OrderBy(d => d.Id, StringComparer.Ordinal)];
     }
 }

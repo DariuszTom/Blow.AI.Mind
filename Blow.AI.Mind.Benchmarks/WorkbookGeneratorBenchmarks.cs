@@ -6,7 +6,7 @@ namespace Blow.AI.Mind.Benchmarks;
 public class WorkbookGeneratorBenchmarks
 {
     [Benchmark(Baseline = true)]
-    public async Task<long> Plain()
+    public static async Task<long> Plain()
     {
         using var output = new MemoryStream();
         await WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets).WithRows(100).GenerateAsync(output);
@@ -14,7 +14,7 @@ public class WorkbookGeneratorBenchmarks
     }
 
     [Benchmark]
-    public async Task<long> Encrypted()
+    public static async Task<long> Encrypted()
     {
         using var output = new MemoryStream();
         await WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets).WithRows(100).Encrypted().GenerateAsync(output);

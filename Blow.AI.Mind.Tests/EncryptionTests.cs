@@ -16,7 +16,7 @@ public class EncryptionTests
 
         file.Encrypted.ShouldBeTrue();
         password.ShouldNotBeNullOrEmpty();
-        bytes.AsSpan(0, 8).ToArray().ShouldBe(new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 });
+        bytes.AsSpan(0, 8).ToArray().ShouldBe([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]);
 
         Should.Throw<Exception>(() => TestHelpers.ReadExcel(bytes));
         Should.Throw<Exception>(() => TestHelpers.ReadExcel(bytes, "wrong-password"));

@@ -31,8 +31,8 @@ public sealed record InjectionDefinition
     [JsonPropertyName("text")]
     public required string Text { get; init; }
 
-    [JsonPropertyName("placements")]
     /// <summary>Placements this injection may use. Defaults to all placements.</summary>
+    [JsonPropertyName("placements")]
     public IReadOnlyList<InjectionPlacement> Placements { get; init; } = Enum.GetValues<InjectionPlacement>();
 
     [JsonPropertyName("tags")]

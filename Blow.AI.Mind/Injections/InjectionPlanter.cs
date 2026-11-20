@@ -36,7 +36,7 @@ internal sealed class InjectionPlanter(XLWorkbook workbook, InjectionTarget targ
 
         foreach (var group in items.Where(i => ColumnOf(i.Placement) is not null).GroupBy(i => ColumnOf(i.Placement)!.Value))
         {
-            PlantInColumn(group.Key, group.ToList(), locations);
+            PlantInColumn(group.Key, [.. group], locations);
         }
 
         foreach (var item in items.Where(i => ColumnOf(i.Placement) is null))
@@ -50,8 +50,8 @@ internal sealed class InjectionPlanter(XLWorkbook workbook, InjectionTarget targ
             };
         }
 
-        return items.Select(i => new InjectionRecord(i.Definition.Id, i.Definition.Category, i.Marker, difficulty,
-            i.Payload.Technique, i.Placement, locations[i].Sheet, locations[i].Locations, i.BeaconUrl)).ToList();
+        return [.. items.Select(i => new InjectionRecord(i.Definition.Id, i.Definition.Category, i.Marker, difficulty,
+            i.Payload.Technique, i.Placement, locations[i].Sheet, locations[i].Locations, i.BeaconUrl))];
     }
 
     private int? ColumnOf(InjectionPlacement placement) => placement switch
