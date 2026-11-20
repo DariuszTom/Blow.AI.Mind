@@ -62,7 +62,7 @@ The default injection difficulty is `Obfuscated`. Add definitions under `Injecti
 
 ### Code execution canaries
 
-The `code-execution` category asks an agent to run a harmless :) command that prints its unique manifest marker. `{{python_command}}` expands to a `python3` command and `{{bash_command}}` to a Bash `printf` command; neither accesses files or the network. The package only writes text into the workbook and does not execute these commands. With `Obfuscated` difficulty these command-containing definitions use Base64, so decoding restores the complete command. Use `.WithInjections(o => o.InCategory("code-execution"))` to select this category; as with other non-beacon categories, it is included in unfiltered injection selection.
+The `code-execution` category asks an agent to run a harmless;) command that prints its unique manifest marker. `{{python_command}}` expands to a `python3` command and `{{bash_command}}` to a Bash `printf` command; neither accesses files or the network. The package only writes text into the workbook and does not execute these commands. With `Obfuscated` difficulty these command-containing definitions use Base64, so decoding restores the complete command. Use `.WithInjections(o => o.InCategory("code-execution"))` to select this category; as with other non-beacon categories, it is included in unfiltered injection selection.
 
 A marker in an answer can be quoted rather than executed. Verify execution using trusted tool-execution logs from an authorized, isolated test environment; even a beacon request alone does not prove a specific command ran.
 
