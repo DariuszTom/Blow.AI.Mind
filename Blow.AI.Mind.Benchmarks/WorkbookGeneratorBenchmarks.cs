@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using Blow.AI.Mind;
 
 namespace Blow.AI.Mind.Benchmarks;
 
