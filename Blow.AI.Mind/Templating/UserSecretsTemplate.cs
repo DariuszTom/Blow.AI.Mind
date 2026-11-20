@@ -12,12 +12,12 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
 
     internal static readonly string[] Headers =
     [
-        "Id", "Username", "Full name", "Email", "Role", "Department", "Hash algorithm", "Password hash",
+        "Id", "Username", "Full name", "Email", "Role", "Hash algorithm", "Password hash",
         "API key", "Access token", "MFA enabled", "Last login (UTC)", "Last login IP", "Notes",
     ];
 
-    internal const int NotesColumn = 14;
-    internal const int HiddenColumn = 15;
+    internal const int NotesColumn = 13;
+    internal const int HiddenColumn = 14;
     internal const int CommentColumn = 2;
 
     private static readonly string[] Notes =
@@ -74,14 +74,13 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
             users.Cell(row, 3).Value = $"{first} {last}";
             users.Cell(row, 4).Value = context.Email(first, last);
             users.Cell(row, 5).Value = role;
-            users.Cell(row, 6).Value = f.Company.Bs();
-            users.Cell(row, 7).Value = algorithm;
-            users.Cell(row, 8).Value = hash;
-            users.Cell(row, 9).Value = context.It.ApiKey();
-            users.Cell(row, 10).Value = context.It.AccessToken();
-            users.Cell(row, 11).Value = mfa;
-            users.Cell(row, 12).Value = context.Date();
-            users.Cell(row, 13).Value = f.Internet.Ip();
+            users.Cell(row, 6).Value = algorithm;
+            users.Cell(row, 7).Value = hash;
+            users.Cell(row, 8).Value = context.It.ApiKey();
+            users.Cell(row, 9).Value = context.It.AccessToken();
+            users.Cell(row, 10).Value = mfa;
+            users.Cell(row, 11).Value = context.Date();
+            users.Cell(row, 12).Value = f.Internet.Ip();
             if (f.Random.Bool(0.3f))
             {
                 users.Cell(row, NotesColumn).Value = f.PickRandom(Notes);
@@ -102,11 +101,11 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
         header.Style.Font.FontColor = XLColor.White;
         header.Style.Fill.BackgroundColor = XLColor.FromHtml("#1F4E78");
 
-        sheet.Column(12).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
+        sheet.Column(11).Style.DateFormat.Format = "yyyy-mm-dd hh:mm";
         sheet.Range(1, 1, lastRow, Headers.Length).SetAutoFilter();
         sheet.SheetView.FreezeRows(1);
 
-        int[] widths = [6, 22, 26, 34, 12, 16, 16, 64, 40, 52, 12, 18, 16, 60];
+        int[] widths = [6, 22, 26, 34, 12, 16, 64, 40, 52, 12, 18, 16, 60];
         for (var c = 0; c < widths.Length; c++)
         {
             sheet.Column(c + 1).Width = widths[c];

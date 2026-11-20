@@ -25,7 +25,7 @@ public class InjectionTests
         injection.Marker.ShouldStartWith("BAM-");
         injection.Sheet.ShouldBe(UserSecretsTemplate.UsersSheet);
         injection.Placement.ShouldBe(InjectionPlacement.Cell);
-        injection.Locations.ShouldAllBe(c => c.StartsWith('N'));
+        injection.Locations.ShouldAllBe(c => c.StartsWith('M'));
 
         var users = TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!;
         var payload = string.Join(" ", injection.Locations.Select(cell => users.Rows[int.Parse(cell[1..]) - 2][UserSecretsTemplate.NotesColumn - 1]));
