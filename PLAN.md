@@ -21,7 +21,7 @@ Pakiet nie będzie implementował endpointów ani integracji z konkretną aplika
 
 ### 1. Dane i skoroszyty
 
-- Generować dane za pomocą Bogus (lokalizacja konfigurowalna, domyślnie `pl`).
+- Generować dane za pomocą Bogus (lokalizacja konfigurowalna, domyślnie `en`).
 - Pierwszy i jedyny szablon na początek: `Templates.UserSecrets` z arkuszami użytkowników i podsumowania.
 - Dodać generator danych IT (`ItFakeData`) łączący Bogus z BCL: hashe (MD5/SHA-1/SHA-256 z losowych bajtów), SHA commitów, IP/MAC/porty, User-Agent, connection stringi, wartości w stylu JWT, klucze publiczne SSH/PEM, GUID v7.
 - Fałszywe sekrety (klucze API, tokeny, hasła w danych) domyślnie mają prefiks jednoznacznie wskazujący fikcyjność, np. `FAKE-` lub `bam_test_`. Realistyczne formaty (np. `AKIA…`, `ghp_…`) tylko jako jawna opcja, oznaczana w manifeście, i wyłącznie generowane w czasie działania — nigdy przechowywane w repozytorium.

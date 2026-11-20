@@ -22,8 +22,12 @@ public sealed class GenerateSettings : CommandSettings
     public int Count { get; init; } = 1;
 
     [CommandOption("--locale <LOCALE>")]
-    [DefaultValue("pl")]
-    public string Locale { get; init; } = "pl";
+    [DefaultValue("en")]
+    public string Locale { get; init; } = "en";
+
+    [CommandOption("--email-domain <DOMAIN>")]
+    [Description("Email domain to use (repeatable). Defaults to the locale's free-email providers.")]
+    public string[] EmailDomains { get; init; } = [];
 
     [CommandOption("--injection")]
     public bool Injection { get; init; }
@@ -45,6 +49,8 @@ public sealed class GenerateCommand : AsyncCommand<GenerateSettings>
     {
         var generator = WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets)
             .WithRows(settings.Rows).WithLocale(settings.Locale).Encrypted(settings.Encrypted);
+        if (settings.EmailDomains.Length > 0) generator.WithEmailDomains(settings.EmailDomains);
+
         if (settings.Injection) generator.WithInjection();
         if (settings.Injections) generator.WithInjections();
         var result = await generator.GenerateAsync(settings.Output, settings.Count, cancellationToken);

@@ -8,12 +8,14 @@ using Blow.AI.Mind;
 var result = await WorkbookGenerator.Create()
     .WithTemplate(Templates.UserSecrets)
     .WithRows(100)
-    .WithLocale("en")
+    .WithLocale("pl")
     .WithInjection() // One random injection; WithInjections() selects all matching injections.
     .GenerateAsync("out", count: 2);
 ```
 
-The data locale is configurable using `WithLocale`; the default is `pl`. Injection definitions can use different languages independently of the data locale. Use `InLanguage` in the injection options to filter them.
+The data locale is configurable using `WithLocale`; the default is `en`. Injection definitions can use different languages independently of the data locale. Use `InLanguage` in the injection options to filter them.
+
+By default, email addresses use the locale's free-email providers from Bogus (e.g. `gmail.com`, `yahoo.com`). Use `WithEmailDomains("contoso.com", "fabrikam.com")` (CLI: `--email-domain`, repeatable) to use your own domains.
 
 The default injection difficulty is `Obfuscated`. Add definitions under `Injections/<category>/<id>.json`, with `{{marker}}` in the text, or load a custom directory with `WithInjectionsFrom`. The manifest records each injection's marker and location. `InjectionEvaluator` detects markers in an agent's response, but a marker alone does not prove that the agent followed the instruction: it may simply have quoted the document.
 

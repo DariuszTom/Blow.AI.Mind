@@ -34,11 +34,12 @@ public sealed class WorkbookGenerator
 
     private WorkbookTemplate _template = Templates.UserSecrets;
     private int _rows = 100;
-    private string _locale = "pl";
+    private string _locale = "en";
     private InjectionMode _injectionMode;
     private InjectionOptions _injectionOptions = new();
     private IReadOnlyList<InjectionDefinition>? _customInjections;
     private bool _encrypted;
+    private IReadOnlyList<string> _emailDomains = [];
     private ILogger _logger = NullLogger.Instance;
 
     private WorkbookGenerator()
@@ -64,7 +65,7 @@ public sealed class WorkbookGenerator
         return this;
     }
 
-    /// <summary>Bogus locale, e.g. <c>pl</c>, <c>en</c>, <c>de</c>. Defaults to <c>pl</c>.</summary>
+    /// <summary>Bogus locale, e.g. <c>pl</c>, <c>en</c>, <c>de</c>. Defaults to <c>en</c>.</summary>
     public WorkbookGenerator WithLocale(string locale)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(locale);
@@ -74,6 +75,34 @@ public sealed class WorkbookGenerator
         }
 
         _locale = locale;
+        return this;
+    }
+
+    /// <summary>
+    /// Email domains to pick from, e.g. <c>contoso.com</c>. By default Bogus uses the locale's
+    /// free-email providers (e.g. <c>gmail.com</c>, <c>yahoo.com</c>).
+    /// </summary>
+    public WorkbookGenerator WithEmailDomains(params string[] domains)
+    {
+        ArgumentNullException.ThrowIfNull(domains);
+        if (domains.Length == 0)
+        {
+            throw new ArgumentException("At least one email domain is required.", nameof(domains));
+        }
+
+        var normalized = new List<string>(domains.Length);
+        foreach (var domain in domains)
+        {
+            var value = domain?.Trim().TrimStart('@').ToLowerInvariant();
+            if (string.IsNullOrEmpty(value) || !value.Contains('.') || Uri.CheckHostName(value) != UriHostNameType.Dns)
+            {
+                throw new ArgumentException($"Invalid email domain '{domain}'.", nameof(domains));
+            }
+
+            normalized.Add(value);
+        }
+
+        _emailDomains = normalized.Distinct().ToList();
         return this;
     }
 
@@ -187,7 +216,7 @@ public sealed class WorkbookGenerator
         var random = new CryptographicRandomizer();
         var faker = new Faker(_locale) { Random = random };
         using var workbook = new XLWorkbook();
-        var target = _template.Build(workbook, new TemplateContext(faker, _rows));
+        var target = _template.Build(workbook, new TemplateContext(faker, _rows, _emailDomains));
 
         var records = PlantInjections(target, injections, random);
 

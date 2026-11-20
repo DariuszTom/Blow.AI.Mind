@@ -38,6 +38,40 @@ public class UserSecretsTemplateTests
     }
 
     [Test]
+    public async Task Emails_use_locale_providers_by_default()
+    {
+        var (bytes, _) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(50));
+        var users = TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!;
+
+        foreach (System.Data.DataRow row in users.Rows)
+        {
+            var email = row["Email"].ToString()!;
+            email.ShouldContain("@");
+            email.ShouldNotEndWith("@example.com");
+        }
+    }
+
+    [Test]
+    public async Task Emails_use_configured_domains()
+    {
+        string[] domains = ["contoso.com", "fabrikam.pl"];
+        var (bytes, _) = await TestHelpers.GenerateAsync(
+            WorkbookGenerator.Create().WithRows(30).WithEmailDomains("Contoso.com", "@fabrikam.pl"));
+        var users = TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!;
+
+        foreach (System.Data.DataRow row in users.Rows)
+        {
+            domains.ShouldContain(row["Email"].ToString()!.Split('@')[1]);
+        }
+    }
+
+    [TestCase("")]
+    [TestCase("nodot")]
+    [TestCase("bad domain.com")]
+    public void Invalid_email_domain_throws(string domain) =>
+        Should.Throw<ArgumentException>(() => WorkbookGenerator.Create().WithEmailDomains(domain));
+
+    [Test]
     public async Task Repeated_generations_produce_different_data()
     {
         var (a, _) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(30));

@@ -18,6 +18,20 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
 
     internal const int NotesColumn = 14;
 
+    private static readonly string[] Notes =
+    [
+        "Password reset requested via helpdesk.",
+        "Account locked after 5 failed login attempts.",
+        "API key rotated during quarterly review.",
+        "MFA device replaced.",
+        "Temporary access granted for migration project.",
+        "Access review pending manager approval.",
+        "Service account - do not disable.",
+        "Token scope reduced to read-only.",
+        "Onboarding completed.",
+        "Scheduled for offboarding next month.",
+    ];
+
     private static readonly string[] Roles = ["Admin", "Developer", "DevOps", "Analyst", "Support", "Auditor", "ReadOnly"];
 
     public override string Name => "UserSecrets";
@@ -56,9 +70,9 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
             users.Cell(row, 1).Value = i + 1;
             users.Cell(row, 2).Value = username;
             users.Cell(row, 3).Value = $"{first} {last}";
-            users.Cell(row, 4).Value = f.Internet.Email(first, last, provider: "example.com").ToLowerInvariant();
+            users.Cell(row, 4).Value = context.Email(first, last);
             users.Cell(row, 5).Value = role;
-            users.Cell(row, 6).Value = f.Commerce.Department(1);
+            users.Cell(row, 6).Value = f.Company.Bs();
             users.Cell(row, 7).Value = algorithm;
             users.Cell(row, 8).Value = hash;
             users.Cell(row, 9).Value = context.It.ApiKey();
@@ -66,7 +80,10 @@ internal sealed class UserSecretsTemplate : WorkbookTemplate
             users.Cell(row, 11).Value = mfa;
             users.Cell(row, 12).Value = context.Date();
             users.Cell(row, 13).Value = f.Internet.Ip();
-            users.Cell(row, NotesColumn).Value = f.Random.Bool(0.2f) ? f.Lorem.Sentence() : string.Empty;
+            if (f.Random.Bool(0.3f))
+            {
+                users.Cell(row, NotesColumn).Value = f.PickRandom(Notes);
+            }
         }
 
         var lastRow = context.Rows + 1;
