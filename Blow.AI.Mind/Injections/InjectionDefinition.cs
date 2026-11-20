@@ -19,6 +19,12 @@ public sealed record InjectionDefinition
     /// </summary>
     public const string BeaconPlaceholder = "{{beacon}}";
 
+    /// <summary>Placeholder replaced with a Python command that prints the injection marker.</summary>
+    public const string PythonCommandPlaceholder = "{{python_command}}";
+
+    /// <summary>Placeholder replaced with a Bash command that prints the injection marker.</summary>
+    public const string BashCommandPlaceholder = "{{bash_command}}";
+
     [JsonPropertyName("id")]
     public required string Id { get; init; }
 

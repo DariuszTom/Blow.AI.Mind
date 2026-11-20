@@ -48,6 +48,8 @@ internal static class InjectionObfuscator
     public static ObfuscatedPayload Apply(string text, string marker, string? beaconUrl, Difficulty difficulty, Randomizer random)
     {
         var hasBeacon = text.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal);
+        var hasCommand = text.Contains(InjectionDefinition.PythonCommandPlaceholder, StringComparison.Ordinal)
+            || text.Contains(InjectionDefinition.BashCommandPlaceholder, StringComparison.Ordinal);
         if (hasBeacon && beaconUrl is null)
         {
             throw new InvalidOperationException("The injection requires a beacon URL.");
@@ -58,13 +60,15 @@ internal static class InjectionObfuscator
             text = text.Replace(InjectionDefinition.BeaconPlaceholder, beaconUrl, StringComparison.Ordinal);
         }
 
-        var resolved = text.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal);
+        var resolved = text.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal)
+            .Replace(InjectionDefinition.PythonCommandPlaceholder, $"python3 -c \"print('{marker}')\"", StringComparison.Ordinal)
+            .Replace(InjectionDefinition.BashCommandPlaceholder, $"printf '%s\\n' '{marker}'", StringComparison.Ordinal);
         if (difficulty == Difficulty.Plain)
         {
             return new(ObfuscationTechnique.None, [resolved]);
         }
 
-        var technique = random.ArrayElement(hasBeacon ? BeaconTechniques : Techniques);
+        var technique = hasCommand ? ObfuscationTechnique.Base64 : random.ArrayElement(hasBeacon ? BeaconTechniques : Techniques);
         return technique switch
         {
             ObfuscationTechnique.SplitCells => new(technique, SplitWords(resolved, random.Number(2, 3))),

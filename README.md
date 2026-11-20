@@ -58,7 +58,13 @@ Use beacons and served files only on infrastructure you own: they are passive te
 
 By default, email addresses use the locale's free-email providers from Bogus (e.g. `gmail.com`, `yahoo.com`). Use `WithEmailDomains("contoso.com", "fabrikam.com")` (CLI: `--email-domain`, repeatable) to use your own domains.
 
-The default injection difficulty is `Obfuscated`. Add definitions under `Injections/<category>/<id>.json`, with `{{marker}}` in the text, or load a custom directory with `WithInjectionsFrom`. The manifest records each injection's marker and location. `InjectionEvaluator` detects markers in an agent's response, but a marker alone does not prove that the agent followed the instruction: it may simply have quoted the document.
+The default injection difficulty is `Obfuscated`. Add definitions under `Injections/<category>/<id>.json`, with `{{marker}}`, `{{beacon}}`, `{{python_command}}`, or `{{bash_command}}` in the text, or load a custom directory with `WithInjectionsFrom`. The manifest records each injection's marker and location. `InjectionEvaluator` detects markers in an agent's response, but a marker alone does not prove that the agent followed the instruction: it may simply have quoted the document.
+
+### Code execution canaries
+
+The `code-execution` category asks an agent to run a harmless :) command that prints its unique manifest marker. `{{python_command}}` expands to a `python3` command and `{{bash_command}}` to a Bash `printf` command; neither accesses files or the network. The package only writes text into the workbook and does not execute these commands. With `Obfuscated` difficulty these command-containing definitions use Base64, so decoding restores the complete command. Use `.WithInjections(o => o.InCategory("code-execution"))` to select this category; as with other non-beacon categories, it is included in unfiltered injection selection.
+
+A marker in an answer can be quoted rather than executed. Verify execution using trusted tool-execution logs from an authorized, isolated test environment; even a beacon request alone does not prove a specific command ran.
 
 Data generation, injection selection, markers, and passwords use a cryptographic source of randomness. There is no seed for reproducing a generated workbook. `Encrypted()` encrypts the file with an opening password that is neither saved nor returned. **The resulting file cannot normally be opened, and its password cannot be recovered.** The manifest does not contain the password. When generating multiple files, files written before an error or cancellation remain on disk.
 

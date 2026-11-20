@@ -2,11 +2,13 @@ using BenchmarkDotNet.Attributes;
 
 namespace Blow.AI.Mind.Benchmarks;
 
+// BenchmarkDotNet requires instance methods, so CA1822 (mark members as static) must not be applied.
+#pragma warning disable CA1822
 [MemoryDiagnoser]
 public class WorkbookGeneratorBenchmarks
 {
     [Benchmark(Baseline = true)]
-    public static async Task<long> Plain()
+    public async Task<long> Plain()
     {
         using var output = new MemoryStream();
         await WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets).WithRows(100).GenerateAsync(output);
@@ -14,7 +16,7 @@ public class WorkbookGeneratorBenchmarks
     }
 
     [Benchmark]
-    public static async Task<long> Encrypted()
+    public async Task<long> Encrypted()
     {
         using var output = new MemoryStream();
         await WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets).WithRows(100).Encrypted().GenerateAsync(output);

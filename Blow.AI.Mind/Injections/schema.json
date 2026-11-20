@@ -11,8 +11,8 @@
     "language": { "type": "string", "default": "en" },
     "text": {
       "type": "string",
-      "pattern": "\\{\\{(marker|beacon)\\}\\}",
-      "description": "{{marker}} is replaced by a unique canary marker; {{beacon}} by a unique URL on the beacon host configured with WithBeacon()."
+      "pattern": "\\{\\{(marker|beacon|python_command|bash_command)\\}\\}",
+      "description": "{{marker}} is replaced by a unique canary marker; {{beacon}} by a URL configured with WithBeacon(); {{python_command}} and {{bash_command}} by commands that print the marker."
     },
     "placements": {
       "type": "array",

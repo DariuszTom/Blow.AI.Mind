@@ -42,7 +42,8 @@ Pakiet nie będzie implementował endpointów ani integracji z konkretną aplika
 
 - Każde injection to osobny plik JSON w katalogu `Injections/<kategoria>/<id>.json`, dołączany do pakietu jako `EmbeddedResource` (wzorzec `Injections\**\*.json`). Dodanie nowego injection to commit z nowym plikiem, bez zmian w kodzie.
 - Format pliku opisany w `Injections/schema.json` (podpowiedzi i walidacja w edytorze). Pola: `id`, `category`, `language`, `text`, `placements`, `tags`.
-- `text` musi zawierać `{{marker}}` lub `{{beacon}}`; generator podstawia unikalny znacznik (np. `BAM-<guid>`), zapisywany w manifeście razem z miejscem umieszczenia.
+- `text` musi zawierać `{{marker}}`, `{{beacon}}`, `{{python_command}}` lub `{{bash_command}}`; generator podstawia unikalny znacznik (np. `BAM-<guid>`), zapisywany w manifeście razem z miejscem umieszczenia.
+- Kategoria `code-execution` używa `{{python_command}}` i `{{bash_command}}` do wstawienia nieszkodliwych poleceń wypisujących znacznik. Generator ich nie uruchamia; dla `Obfuscated` używa Base64. Sam znacznik w odpowiedzi nie dowodzi wykonania; potrzebne są wiarygodne logi narzędzi testowanego agenta.
 - `{{beacon}}` (kategoria `beacon`) to unikalny URL `<base>/<marker>` na hoście użytkownika biblioteki (`WithBeacon(uri)`). Żądanie na ten URL dowodzi działania agenta, a nie tylko zacytowania dokumentu. To jedyny wyjątek od zasady braku instrukcji wysyłania danych: beacon prowadzi wyłącznie do infrastruktury użytkownika, jest opcjonalny i bez `WithBeacon` takie definicje są pomijane.
 - Pliki zawierają czytelny tekst; poziom trudności realizuje kod w czasie generowania.
 - Poziomy trudności (`Difficulty`): `Plain` oraz `Obfuscated` (domyślny). Transformacje są wybierane kryptograficznie losowo: podział na komórki, Base64, znaki o zerowej szerokości lub rozbicie znacznika.
@@ -116,7 +117,7 @@ Walidacja JSON, generowanie haseł (`RandomNumberGenerator`), hashe i klucze rea
 2. Sprawdzić, że plik szyfrowany nie otwiera się bez hasła ani z błędnym hasłem. W kontrolowanym teście wewnętrznym potwierdzić też otwarcie z hasłem użytym podczas szyfrowania, bez dodawania go do publicznego wyniku.
 3. Zweryfikować, że manifest i publiczne wyniki nie zawierają haseł.
 4. Sprawdzić scenariusze prompt injection, ich położenie i znaczniki względem manifestu.
-5. Test biblioteki injection: każdy wbudowany plik JSON się wczytuje, `id` są unikalne, `text` zawiera `{{marker}}`, `placements` mają tylko wspierane wartości.
+5. Test biblioteki injection: każdy wbudowany plik JSON się wczytuje, `id` są unikalne, `text` zawiera wspierany placeholder, `placements` mają tylko wspierane wartości.
 6. Sprawdzić `.WithInjection()` (dokładnie jedno injection na plik) i `.WithInjections()` (wszystkie injection w każdym pliku) oraz domyślną trudność `Obfuscated`.
 7. Sprawdzić, że fałszywe sekrety domyślnie mają prefiks fikcyjności.
 8. Sprawdzić niezależność generowanych danych, znaczników i haseł oraz użycie kryptograficznego źródła losowości.

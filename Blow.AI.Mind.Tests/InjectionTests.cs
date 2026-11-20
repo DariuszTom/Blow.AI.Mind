@@ -10,7 +10,8 @@ public class InjectionTests
     public void Built_in_library_is_valid_and_non_empty()
     {
         InjectionLibrary.BuiltIn.Count.ShouldBeGreaterThanOrEqualTo(3);
-        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder) || d.RequiresBeacon);
+        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder) || d.RequiresBeacon
+            || d.Text.Contains(InjectionDefinition.PythonCommandPlaceholder) || d.Text.Contains(InjectionDefinition.BashCommandPlaceholder));
         InjectionLibrary.BuiltIn.Select(d => d.Id).ShouldBeUnique();
     }
 
