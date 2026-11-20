@@ -8,8 +8,8 @@ internal static class PasswordGenerator
 {
     private const string Alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_=+";
     /// <summary>
-    /// Znaki	Kombinacje	Average (1 GPU)
-    /// 6	    23 mln	    9 days
+    /// Characters	Combinations	Average (1 GPU)
+    /// 6	        23 mln	        9 days
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
