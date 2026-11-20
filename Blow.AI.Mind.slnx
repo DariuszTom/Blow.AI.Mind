@@ -1,3 +1,6 @@
-<Solution>
+﻿<Solution>
   <Project Path="Blow.AI.Mind/Blow.AI.Mind.csproj" />
+  <Project Path="Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj" />
+  <Project Path="Blow.AI.Mind.Benchmarks/Blow.AI.Mind.Benchmarks.csproj" />
+  <Project Path="Blow.AI.Mind.Cli/Blow.AI.Mind.Cli.csproj" />
 </Solution>

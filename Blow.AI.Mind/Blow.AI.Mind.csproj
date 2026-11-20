@@ -5,11 +5,39 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SignAssembly>False</SignAssembly>
+    <RootNamespace>Blow.AI.Mind</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <PackageId>Blow.AI.Mind</PackageId>
+    <Authors>Blow.AI.Mind Dariusz Tomczak</Authors>
+    <Description>Fast generator of fictional data and realistic Excel (.xlsx) workbooks for AI agent testing: plain files, controlled prompt-injection scenarios with canary markers and files encrypted with a random, discarded open password.</Description>
+    <PackageTags>excel;xlsx;fake-data;bogus;prompt-injection;ai;testing;llm;security</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="ClosedXML" Version="0.105.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
+    <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
+    <PackageReference Include="OpenMcdf" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Injections\**\*.json" Exclude="Injections\schema.json" LogicalName="Blow.AI.Mind.Injections.%(RecursiveDir)%(Filename)%(Extension)" />
+    <None Include="Injections\schema.json" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Blow.AI.Mind.Tests" />
+    <InternalsVisibleTo Include="Blow.AI.Mind.Benchmarks" />
   </ItemGroup>
 
 </Project>
