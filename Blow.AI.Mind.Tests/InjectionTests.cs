@@ -10,7 +10,7 @@ public class InjectionTests
     public void Built_in_library_is_valid_and_non_empty()
     {
         InjectionLibrary.BuiltIn.Count.ShouldBeGreaterThanOrEqualTo(3);
-        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder));
+        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder) || d.RequiresBeacon);
         InjectionLibrary.BuiltIn.Select(d => d.Id).ShouldBeUnique();
     }
 
@@ -37,7 +37,9 @@ public class InjectionTests
     {
         var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(40).WithInjections());
 
-        file.Injections.Select(i => i.InjectionId).Order().ShouldBe(InjectionLibrary.BuiltIn.Select(d => d.Id).Order());
+        file.Injections.Select(i => i.InjectionId).Order()
+            .ShouldBe(InjectionLibrary.BuiltIn.Where(d => !d.RequiresBeacon).Select(d => d.Id).Order());
+        file.Injections.ShouldAllBe(i => i.BeaconUrl == null);
         file.Injections.Select(i => i.Marker).ShouldBeUnique();
         file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();
     }
@@ -49,6 +51,7 @@ public class InjectionTests
             .WithInjections(o => o.WithDifficulty(Difficulty.Plain)));
 
         var notes = TestHelpers.CellsText(TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!, UserSecretsTemplate.NotesColumn - 1);
+        file.Injections.ShouldNotBeEmpty();
         file.Injections.ShouldAllBe(i => i.Technique == ObfuscationTechnique.None && i.Locations.Count == 1);
         file.Injections.ShouldAllBe(i => notes.Contains(i.Marker));
     }

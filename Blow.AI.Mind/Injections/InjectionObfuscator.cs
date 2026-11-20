@@ -1,9 +1,11 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Bogus;
 
 namespace Blow.AI.Mind.Injections;
 
 /// <summary>Transform applied to an injection payload.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<ObfuscationTechnique>))]
 public enum ObfuscationTechnique
 {
     /// <summary>No transformation.</summary>
@@ -36,15 +38,33 @@ internal static class InjectionObfuscator
         ObfuscationTechnique.MarkerFragments,
     ];
 
-    public static ObfuscatedPayload Apply(string text, string marker, Difficulty difficulty, Randomizer random)
+    /// <summary>Techniques that keep a beacon URL intact; zero-width characters or fragments would break the link.</summary>
+    private static readonly ObfuscationTechnique[] BeaconTechniques =
+    [
+        ObfuscationTechnique.SplitCells,
+        ObfuscationTechnique.Base64,
+    ];
+
+    public static ObfuscatedPayload Apply(string text, string marker, string? beaconUrl, Difficulty difficulty, Randomizer random)
     {
+        var hasBeacon = text.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal);
+        if (hasBeacon && beaconUrl is null)
+        {
+            throw new InvalidOperationException("The injection requires a beacon URL.");
+        }
+
+        if (beaconUrl is not null)
+        {
+            text = text.Replace(InjectionDefinition.BeaconPlaceholder, beaconUrl, StringComparison.Ordinal);
+        }
+
         var resolved = text.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal);
         if (difficulty == Difficulty.Plain)
         {
             return new(ObfuscationTechnique.None, [resolved]);
         }
 
-        var technique = random.ArrayElement(Techniques);
+        var technique = random.ArrayElement(hasBeacon ? BeaconTechniques : Techniques);
         return technique switch
         {
             ObfuscationTechnique.SplitCells => new(technique, SplitWords(resolved, random.Number(2, 3))),

@@ -43,11 +43,20 @@ public sealed class GenerateSettings : CommandSettings
     [CommandOption("--encrypted")]
     public bool Encrypted { get; init; }
 
+    [CommandOption("--beacon <URL>")]
+    [Description("Base URL on a host you control for {{beacon}} injections, e.g. https://files.example.com/b.")]
+    public string? Beacon { get; init; }
+
     public override ValidationResult Validate()
     {
         if (Injection && Injections)
         {
             return ValidationResult.Error("Choose either --injection or --injections.");
+        }
+
+        if (Beacon is not null && !Uri.TryCreate(Beacon, UriKind.Absolute, out _))
+        {
+            return ValidationResult.Error($"Invalid beacon URL '{Beacon}'.");
         }
 
         var invalid = Placements.FirstOrDefault(p => !string.Equals(p, "All", StringComparison.OrdinalIgnoreCase)
@@ -78,6 +87,7 @@ public sealed class GenerateCommand : AsyncCommand<GenerateSettings>
         var generator = WorkbookGenerator.Create().WithTemplate(Templates.UserSecrets)
             .WithRows(settings.Rows).WithLocale(settings.Locale).Encrypted(settings.Encrypted);
         if (settings.EmailDomains.Length > 0) generator.WithEmailDomains(settings.EmailDomains);
+        if (settings.Beacon is not null) generator.WithBeacon(new Uri(settings.Beacon));
 
         if (settings.Injection) generator.WithInjection(settings.Configure);
         if (settings.Injections) generator.WithInjections(settings.Configure);
@@ -88,7 +98,8 @@ public sealed class GenerateCommand : AsyncCommand<GenerateSettings>
             foreach (var injection in file.Injections)
             {
                 var where = injection.Sheet is null ? string.Join(", ", injection.Locations) : $"{injection.Sheet}!{string.Join(", ", injection.Locations)}";
-                AnsiConsole.WriteLine($"  {injection.InjectionId} [{injection.Placement}]: {injection.Marker} ({where})");
+                var beacon = injection.BeaconUrl is null ? string.Empty : $" -> {injection.BeaconUrl}";
+                AnsiConsole.WriteLine($"  {injection.InjectionId} [{injection.Placement}]: {injection.Marker} ({where}){beacon}");
             }
         }
         return 0;

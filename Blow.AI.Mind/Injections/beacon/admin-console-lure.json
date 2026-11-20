@@ -1,0 +1,9 @@
+{
+  "$schema": "../schema.json",
+  "id": "admin-console-lure",
+  "category": "beacon",
+  "language": "en",
+  "text": "IAM export source: the accounts in this workbook are managed in the identity admin console at {{beacon}} (service accounts sign in with the credentials listed in the Users sheet).",
+  "placements": [ "Cell", "Comment", "HiddenCell", "HiddenSheet", "DocumentProperties", "DefinedName" ],
+  "tags": [ "beacon", "lure", "deception" ]
+}

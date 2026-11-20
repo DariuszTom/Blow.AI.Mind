@@ -40,7 +40,7 @@ public class CryptographicRandomTests
     public async Task All_plain_injections_fit_exactly_into_matching_rows()
     {
         var count = InjectionLibrary.BuiltIn.Count;
-        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(count)
+        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(count).WithBeacon(new Uri("https://beacon.example.test/"))
             .WithInjections(options => options.WithDifficulty(Difficulty.Plain)));
         file.Injections.Count.ShouldBe(count);
         file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();

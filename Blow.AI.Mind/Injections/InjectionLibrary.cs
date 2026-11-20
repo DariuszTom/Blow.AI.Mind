@@ -82,9 +82,10 @@ public static class InjectionLibrary
             errors.Add("'category' is required");
         }
 
-        if (string.IsNullOrWhiteSpace(definition.Text) || !definition.Text.Contains(InjectionDefinition.MarkerPlaceholder, StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(definition.Text)
+            || (!definition.Text.Contains(InjectionDefinition.MarkerPlaceholder, StringComparison.Ordinal) && !definition.RequiresBeacon))
         {
-            errors.Add($"'text' must contain {InjectionDefinition.MarkerPlaceholder}");
+            errors.Add($"'text' must contain {InjectionDefinition.MarkerPlaceholder} or {InjectionDefinition.BeaconPlaceholder}");
         }
 
         if (definition.Placements is null || definition.Placements.Count == 0)

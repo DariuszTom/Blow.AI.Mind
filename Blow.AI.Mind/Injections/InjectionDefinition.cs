@@ -10,6 +10,15 @@ public sealed record InjectionDefinition
     /// <summary>Placeholder that is replaced by a unique canary marker during generation.</summary>
     public const string MarkerPlaceholder = "{{marker}}";
 
+    /// <summary>Prefix of every generated canary marker.</summary>
+    public const string MarkerPrefix = "BAM-";
+
+    /// <summary>
+    /// Placeholder replaced by a unique beacon URL (<c>&lt;base&gt;/&lt;marker&gt;</c>) on infrastructure configured with
+    /// <see cref="WorkbookGenerator.WithBeacon(Uri)"/>. Definitions using it are skipped when no beacon is configured.
+    /// </summary>
+    public const string BeaconPlaceholder = "{{beacon}}";
+
     [JsonPropertyName("id")]
     public required string Id { get; init; }
 
@@ -28,6 +37,10 @@ public sealed record InjectionDefinition
 
     [JsonPropertyName("tags")]
     public IReadOnlyList<string> Tags { get; init; } = [];
+
+    /// <summary>Whether <see cref="Text"/> contains <see cref="BeaconPlaceholder"/>.</summary>
+    [JsonIgnore]
+    public bool RequiresBeacon => Text?.Contains(BeaconPlaceholder, StringComparison.Ordinal) == true;
 }
 
 /// <summary>Where an injection can be placed inside a workbook.</summary>
@@ -54,6 +67,7 @@ public enum InjectionPlacement
 }
 
 /// <summary>How hard the injection is to spot for a human or a naive filter.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<Difficulty>))]
 public enum Difficulty
 {
     /// <summary>The instruction is written verbatim in a single location.</summary>

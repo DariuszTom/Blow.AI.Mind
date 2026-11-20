@@ -40,6 +40,7 @@ public sealed class WorkbookGenerator
     private IReadOnlyList<InjectionDefinition>? _customInjections;
     private bool _encrypted;
     private IReadOnlyList<string> _emailDomains = [];
+    private Uri? _beaconBase;
     private ILogger _logger = NullLogger.Instance;
 
     private WorkbookGenerator()
@@ -125,6 +126,17 @@ public sealed class WorkbookGenerator
         return this;
     }
 
+    /// <summary>
+    /// Enables <c>{{beacon}}</c> injections: each one gets a unique URL <c>&lt;baseUrl&gt;/&lt;marker&gt;</c>, recorded in
+    /// <see cref="InjectionRecord.BeaconUrl"/>. A request to it shows the agent acted on the instruction. Use only a host you control;
+    /// <see cref="Beacon.TryGetMarker"/> maps a request back to its marker. Without a beacon, such definitions are skipped.
+    /// </summary>
+    public WorkbookGenerator WithBeacon(Uri baseUrl)
+    {
+        _beaconBase = Beacon.NormalizeBase(baseUrl);
+        return this;
+    }
+
     /// <summary>Protects files with a random, cryptographically strong open password that is immediately discarded.</summary>
     public WorkbookGenerator Encrypted(bool encrypted = true)
     {
@@ -146,9 +158,8 @@ public sealed class WorkbookGenerator
         var injections = ResolveInjections();
 
         Directory.CreateDirectory(outputDirectory);
-        var paths = Enumerable.Range(0, count)
-            .Select(_ => Path.GetFullPath(Path.Combine(outputDirectory, $"{_template.Name.ToLowerInvariant()}-{Guid.NewGuid():N}.xlsx")))
-            .ToList();
+        var ids = Enumerable.Range(0, count).Select(_ => Guid.NewGuid()).ToList();
+        var paths = ids.Select(id => Path.GetFullPath(Path.Combine(outputDirectory, FileNameFor(id)))).ToList();
         var existing = paths.FirstOrDefault(File.Exists);
         if (existing is not null)
         {
@@ -159,7 +170,7 @@ public sealed class WorkbookGenerator
         for (var i = 0; i < count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var (bytes, file) = Build(paths[i], injections);
+            var (bytes, file) = Build(ids[i], paths[i], injections);
             var temp = paths[i] + $".{Guid.NewGuid():N}.tmp";
             try
             {
@@ -182,9 +193,19 @@ public sealed class WorkbookGenerator
     {
         ArgumentNullException.ThrowIfNull(output);
         cancellationToken.ThrowIfCancellationRequested();
-        var (bytes, file) = Build(null, ResolveInjections());
+        var (bytes, file) = Build(Guid.NewGuid(), null, ResolveInjections());
         await output.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
         return file;
+    }
+
+    /// <summary>
+    /// Generates a single, fresh workbook in memory, e.g. per HTTP request. Store <see cref="GeneratedWorkbook.Manifest"/>
+    /// on the server (keyed by <see cref="GeneratedFile.Id"/>); it cannot be recreated later.
+    /// </summary>
+    public GeneratedWorkbook Generate()
+    {
+        var (bytes, file) = Build(Guid.NewGuid(), null, ResolveInjections());
+        return new GeneratedWorkbook(bytes, file);
     }
 
     private WorkbookGenerator SetInjections(InjectionMode mode, Action<InjectionOptions>? configure)
@@ -207,18 +228,23 @@ public sealed class WorkbookGenerator
         }
 
         var placements = _injectionOptions.EffectivePlacements;
-        var matching = (_customInjections ?? InjectionLibrary.BuiltIn)
+        var candidates = (_customInjections ?? InjectionLibrary.BuiltIn)
             .Where(d => d.Placements.Any(placements.Contains) && _injectionOptions.Matches(d))
             .ToList();
+        var matching = candidates.Where(d => _beaconBase is not null || !d.RequiresBeacon).ToList();
         if (matching.Count == 0)
         {
-            throw new InvalidOperationException("No injection definitions match the configured filters.");
+            throw new InvalidOperationException(candidates.Count > 0
+                ? "The matching injection definitions require a beacon URL. Call WithBeacon()."
+                : "No injection definitions match the configured filters.");
         }
 
         return matching;
     }
 
-    private (byte[] Bytes, GeneratedFile File) Build(string? path, IReadOnlyList<InjectionDefinition> injections)
+    private string FileNameFor(Guid id) => $"{_template.Name.ToLowerInvariant()}-{id:N}.xlsx";
+
+    private (byte[] Bytes, GeneratedFile File) Build(Guid id, string? path, IReadOnlyList<InjectionDefinition> injections)
     {
         var random = new CryptographicRandomizer();
         var faker = new Faker(_locale) { Random = random };
@@ -234,7 +260,7 @@ public sealed class WorkbookGenerator
             bytes = plain.ToArray();
         }
 
-        var file = new GeneratedFile(path, _rows, _encrypted, records);
+        var file = new GeneratedFile(id, FileNameFor(id), path, DateTimeOffset.UtcNow, _rows, _encrypted, records);
         if (_encrypted)
         {
             var password = PasswordGenerator.Create();
@@ -245,8 +271,8 @@ public sealed class WorkbookGenerator
             PasswordObserver?.Invoke(file, password);
         }
 
-        _logger.LogInformation("Generated {Template} workbook (rows {Rows}, injections {Injections}, encrypted {Encrypted}) {Path}",
-            _template.Name, _rows, records.Count, _encrypted, path ?? "<stream>");
+        _logger.LogInformation("Generated {Template} workbook {Id} (rows {Rows}, injections {Injections}, encrypted {Encrypted}) {Path}",
+            _template.Name, id, _rows, records.Count, _encrypted, path ?? "<memory>");
         return (bytes, file);
     }
 
@@ -271,9 +297,10 @@ public sealed class WorkbookGenerator
 
         var planned = selected.Select(s =>
         {
-            var marker = $"BAM-{Guid.NewGuid():N}".ToUpperInvariant();
-            return new PlannedInjection(s.Definition, s.Placement, marker,
-                InjectionObfuscator.Apply(s.Definition.Text, marker, _injectionOptions.Difficulty, random));
+            var marker = $"{InjectionDefinition.MarkerPrefix}{Guid.NewGuid():N}".ToUpperInvariant();
+            var beaconUrl = s.Definition.RequiresBeacon ? Beacon.CreateUrl(_beaconBase!, marker) : null;
+            return new PlannedInjection(s.Definition, s.Placement, marker, beaconUrl,
+                InjectionObfuscator.Apply(s.Definition.Text, marker, beaconUrl?.AbsoluteUri, _injectionOptions.Difficulty, random));
         }).ToList();
 
         return new InjectionPlanter(workbook, target, random).Plant(planned, _injectionOptions.Difficulty);

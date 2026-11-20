@@ -9,7 +9,11 @@
     "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "category": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "language": { "type": "string", "default": "en" },
-    "text": { "type": "string", "pattern": "\\{\\{marker\\}\\}" },
+    "text": {
+      "type": "string",
+      "pattern": "\\{\\{(marker|beacon)\\}\\}",
+      "description": "{{marker}} is replaced by a unique canary marker; {{beacon}} by a unique URL on the beacon host configured with WithBeacon()."
+    },
     "placements": {
       "type": "array",
       "minItems": 1,

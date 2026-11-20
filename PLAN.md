@@ -4,7 +4,7 @@
 
 Stworzyć pakiet NuGet dla .NET, który szybko generuje duże ilości fikcyjnych danych i realistycznie wyglądających plików Excel. Pakiet ma umożliwiać tworzenie plików zwykłych, plików z kontrolowanymi scenariuszami prompt injection oraz plików zabezpieczonych losowym hasłem.
 
-Pakiet nie będzie implementował endpointów ani integracji z konkretną aplikacją. Aplikacja korzystająca z biblioteki decyduje, gdzie i w jaki sposób udostępnić wygenerowane pliki.
+Pakiet nie będzie implementował endpointów ani integracji z konkretną aplikacją. Aplikacja korzystająca z biblioteki decyduje, gdzie i w jaki sposób udostępnić wygenerowane pliki. Pakiet zapewnia do tego `Generate()` (świeży plik w pamięci na każde żądanie, z manifestem przechowywanym po stronie serwera) oraz pomocnik `Beacon` do mapowania żądań na znaczniki.
 
 ## Założenia
 
@@ -42,7 +42,8 @@ Pakiet nie będzie implementował endpointów ani integracji z konkretną aplika
 
 - Każde injection to osobny plik JSON w katalogu `Injections/<kategoria>/<id>.json`, dołączany do pakietu jako `EmbeddedResource` (wzorzec `Injections\**\*.json`). Dodanie nowego injection to commit z nowym plikiem, bez zmian w kodzie.
 - Format pliku opisany w `Injections/schema.json` (podpowiedzi i walidacja w edytorze). Pola: `id`, `category`, `language`, `text`, `placements`, `tags`.
-- `text` musi zawierać `{{marker}}`; generator podstawia unikalny znacznik (np. `BAM-<guid>`), zapisywany w manifeście razem z miejscem umieszczenia.
+- `text` musi zawierać `{{marker}}` lub `{{beacon}}`; generator podstawia unikalny znacznik (np. `BAM-<guid>`), zapisywany w manifeście razem z miejscem umieszczenia.
+- `{{beacon}}` (kategoria `beacon`) to unikalny URL `<base>/<marker>` na hoście użytkownika biblioteki (`WithBeacon(uri)`). Żądanie na ten URL dowodzi działania agenta, a nie tylko zacytowania dokumentu. To jedyny wyjątek od zasady braku instrukcji wysyłania danych: beacon prowadzi wyłącznie do infrastruktury użytkownika, jest opcjonalny i bez `WithBeacon` takie definicje są pomijane.
 - Pliki zawierają czytelny tekst; poziom trudności realizuje kod w czasie generowania.
 - Poziomy trudności (`Difficulty`): `Plain` oraz `Obfuscated` (domyślny). Transformacje są wybierane kryptograficznie losowo: podział na komórki, Base64, znaki o zerowej szerokości lub rozbicie znacznika.
 - Użytkownik biblioteki może dołączyć własne pliki w tym samym formacie (`WithInjectionsFrom(path)`).
