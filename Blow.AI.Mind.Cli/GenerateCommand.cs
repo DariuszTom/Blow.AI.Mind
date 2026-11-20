@@ -10,6 +10,7 @@ public sealed class GenerateCommand : AsyncCommand<GenerateSettings>
             .WithRows(settings.Rows).WithLocale(settings.Locale).Encrypted(settings.Encrypted);
         if (settings.EmailDomains.Length > 0) generator.WithEmailDomains(settings.EmailDomains);
         if (settings.Beacon is not null) generator.WithBeacon(new Uri(settings.Beacon));
+        if (settings.Command is not null) generator.WithCommand(settings.Command);
 
         if (settings.Injection) generator.WithInjection(settings.Configure);
         if (settings.Injections) generator.WithInjections(settings.Configure);
@@ -21,7 +22,8 @@ public sealed class GenerateCommand : AsyncCommand<GenerateSettings>
             {
                 var where = injection.Sheet is null ? string.Join(", ", injection.Locations) : $"{injection.Sheet}!{string.Join(", ", injection.Locations)}";
                 var beacon = injection.BeaconUrl is null ? string.Empty : $" -> {injection.BeaconUrl}";
-                AnsiConsole.WriteLine($"  {injection.InjectionId} [{injection.Placement}]: {injection.Marker} ({where}){beacon}");
+                var command = injection.Command is null ? string.Empty : $" cmd: {injection.Command}";
+                AnsiConsole.WriteLine($"  {injection.InjectionId} [{injection.Placement}]: {injection.Marker} ({where}){beacon}{command}");
             }
         }
         return 0;

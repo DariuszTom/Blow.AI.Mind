@@ -58,16 +58,27 @@ Use beacons and served files only on infrastructure you own: they are passive te
 
 By default, email addresses use the locale's free-email providers from Bogus (e.g. `gmail.com`, `yahoo.com`). Use `WithEmailDomains("contoso.com", "fabrikam.com")` (CLI: `--email-domain`, repeatable) to use your own domains.
 
-The default injection difficulty is `Obfuscated`. Add definitions under `Injections/<category>/<id>.json`, with `{{marker}}`, `{{beacon}}`, `{{python_command}}`, or `{{bash_command}}` in the text, or load a custom directory with `WithInjectionsFrom`. The manifest records each injection's marker and location. `InjectionEvaluator` detects markers in an agent's response, but a marker alone does not prove that the agent followed the instruction: it may simply have quoted the document.
+The default injection difficulty is `Obfuscated`. Add definitions under `Injections/<category>/<id>.json`, with `{{marker}}`, `{{beacon}}`, or `{{command}}` in the text, or load a custom directory with `WithInjectionsFrom`. The manifest records each injection's marker and location. `InjectionEvaluator` detects markers in an agent's response, but a marker alone does not prove that the agent followed the instruction: it may simply have quoted the document.
 
 ### Code execution canaries
 
-The `code-execution` category asks an agent to run a harmless;) command that prints its unique manifest marker. `{{python_command}}` expands to a `python3` command and `{{bash_command}}` to a Bash `printf` command; neither accesses files or the network. The package only writes text into the workbook and does not execute these commands. With `Obfuscated` difficulty these command-containing definitions use Base64, so decoding restores the complete command. Use `.WithInjections(o => o.InCategory("code-execution"))` to select this category; as with other non-beacon categories, it is included in unfiltered injection selection.
+`WithCommand` works like `WithBeacon`: you supply the text, and the package only writes it into the workbook. `{{command}}` (category `code-execution`) is replaced by that code. The code must contain `{{marker}}`, `{{beacon}}`, or both; each injection gets its own values. Without `WithCommand`, these definitions are skipped. If the code contains `{{beacon}}`, call `WithBeacon` as well. The package does not execute the code. With `Obfuscated` difficulty these definitions use Base64, so decoding restores the complete command. The expanded code is recorded in `InjectionRecord.Command`.
+
+```csharp
+using Blow.AI.Mind;
+using Blow.AI.Mind.Injections;
+
+var result = await WorkbookGenerator.Create()
+    .WithTemplate(Templates.UserSecrets)
+    .WithRows(100)
+    .WithBeacon(new Uri("https://files.example.com/b"))
+    .WithCommand("python3 -c \"import urllib.request; urllib.request.urlopen('{{beacon}}')\"")
+    .WithInjections(o => o.InCategory("code-execution"))
 
 A marker in an answer can be quoted rather than executed. Verify execution using trusted tool-execution logs from an authorized, isolated test environment; even a beacon request alone does not prove a specific command ran.
 
 Data generation, injection selection, markers, and passwords use a cryptographic source of randomness. There is no seed for reproducing a generated workbook. `Encrypted()` encrypts the file with an opening password that is neither saved nor returned. **The resulting file cannot normally be opened, and its password cannot be recovered.** The manifest does not contain the password. When generating multiple files, files written before an error or cancellation remain on disk.
 
-CLI: `dotnet run --project Blow.AI.Mind.Cli -- generate --output out --rows 100 --locale en --injection`. Optional arguments include `--injections` instead of `--injection`, `--placement` (repeatable, or `All`), `--email-domain`, `--beacon <URL>`, `--encrypted`, `--count`, and `--locale`.
+CLI: `dotnet run --project Blow.AI.Mind.Cli -- generate --output out --rows 100 --locale en --injection`. Optional arguments include `--injections` instead of `--injection`, `--placement` (repeatable, or `All`), `--email-domain`, `--beacon <URL>`, `--command <CODE>`, `--encrypted`, `--count`, and `--locale`.
 
 Workbooks are created in memory using ClosedXML; large row counts can require substantial memory. Benchmark results and compatibility with specific Excel versions require separate verification.

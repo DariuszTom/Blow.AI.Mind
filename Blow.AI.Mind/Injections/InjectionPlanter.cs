@@ -4,7 +4,7 @@ using ClosedXML.Excel;
 
 namespace Blow.AI.Mind.Injections;
 
-internal sealed record PlannedInjection(InjectionDefinition Definition, InjectionPlacement Placement, string Marker, Uri? BeaconUrl, ObfuscatedPayload Payload);
+internal sealed record PlannedInjection(InjectionDefinition Definition, InjectionPlacement Placement, string Marker, Uri? BeaconUrl, string? Command, ObfuscatedPayload Payload);
 
 /// <summary>Writes injection payloads into the requested workbook locations.</summary>
 internal sealed class InjectionPlanter(XLWorkbook workbook, InjectionTarget target, Randomizer random)
@@ -51,7 +51,7 @@ internal sealed class InjectionPlanter(XLWorkbook workbook, InjectionTarget targ
         }
 
         return [.. items.Select(i => new InjectionRecord(i.Definition.Id, i.Definition.Category, i.Marker, difficulty,
-            i.Payload.Technique, i.Placement, locations[i].Sheet, locations[i].Locations, i.BeaconUrl))];
+            i.Payload.Technique, i.Placement, locations[i].Sheet, locations[i].Locations, i.BeaconUrl, i.Command))];
     }
 
     private int? ColumnOf(InjectionPlacement placement) => placement switch

@@ -19,11 +19,11 @@ public sealed record InjectionDefinition
     /// </summary>
     public const string BeaconPlaceholder = "{{beacon}}";
 
-    /// <summary>Placeholder replaced with a Python command that prints the injection marker.</summary>
-    public const string PythonCommandPlaceholder = "{{python_command}}";
-
-    /// <summary>Placeholder replaced with a Bash command that prints the injection marker.</summary>
-    public const string BashCommandPlaceholder = "{{bash_command}}";
+    /// <summary>
+    /// Placeholder replaced with code supplied to <see cref="WorkbookGenerator.WithCommand"/>.
+    /// Definitions using it are skipped when no command is configured. The package writes the text and does not execute it.
+    /// </summary>
+    public const string CommandPlaceholder = "{{command}}";
 
     [JsonPropertyName("id")]
     public required string Id { get; init; }
@@ -47,6 +47,10 @@ public sealed record InjectionDefinition
     /// <summary>Whether <see cref="Text"/> contains <see cref="BeaconPlaceholder"/>.</summary>
     [JsonIgnore]
     public bool RequiresBeacon => Text?.Contains(BeaconPlaceholder, StringComparison.Ordinal) == true;
+
+    /// <summary>Whether <see cref="Text"/> contains <see cref="CommandPlaceholder"/>.</summary>
+    [JsonIgnore]
+    public bool RequiresCommand => Text?.Contains(CommandPlaceholder, StringComparison.Ordinal) == true;
 }
 
 /// <summary>Where an injection can be placed inside a workbook.</summary>

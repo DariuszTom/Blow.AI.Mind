@@ -43,7 +43,8 @@ public sealed record GeneratedWorkbook(byte[] Content, GeneratedFile Manifest)
 /// <param name="Placement">Type of location.</param>
 /// <param name="Sheet">Worksheet name, or <c>null</c> for workbook-level placements (document properties, defined names).</param>
 /// <param name="Locations">A1 cell references, custom property names or defined names containing the payload.</param>
-/// <param name="BeaconUrl">Unique beacon URL planted by a <c>{{beacon}}</c> injection, otherwise <c>null</c>.</param>
+/// <param name="BeaconUrl">Unique beacon URL planted via <c>{{beacon}}</c>, otherwise <c>null</c>.</param>
+/// <param name="Command">Expanded code planted via <c>{{command}}</c>, otherwise <c>null</c>. The package does not execute it.</param>
 public sealed record InjectionRecord(
     string InjectionId,
     string Category,
@@ -53,4 +54,5 @@ public sealed record InjectionRecord(
     InjectionPlacement Placement,
     string? Sheet,
     IReadOnlyList<string> Locations,
-    Uri? BeaconUrl = null);
+    Uri? BeaconUrl = null,
+    string? Command = null);

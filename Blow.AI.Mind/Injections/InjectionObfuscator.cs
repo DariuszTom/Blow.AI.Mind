@@ -45,14 +45,40 @@ internal static class InjectionObfuscator
         ObfuscationTechnique.Base64,
     ];
 
-    public static ObfuscatedPayload Apply(string text, string marker, string? beaconUrl, Difficulty difficulty, Randomizer random)
+    /// <summary>Replaces <c>{{marker}}</c> and <c>{{beacon}}</c> inside consumer-supplied command text.</summary>
+    public static string ResolveCommand(string command, string marker, string? beaconUrl)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(command);
+        if (command.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal))
+        {
+            if (beaconUrl is null)
+            {
+                throw new InvalidOperationException($"The command contains {InjectionDefinition.BeaconPlaceholder}. Call WithBeacon().");
+            }
+
+            command = command.Replace(InjectionDefinition.BeaconPlaceholder, beaconUrl, StringComparison.Ordinal);
+        }
+
+        return command.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal);
+    }
+
+    public static ObfuscatedPayload Apply(string text, string marker, string? beaconUrl, string? command, Difficulty difficulty, Randomizer random)
     {
         var hasBeacon = text.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal);
-        var hasCommand = text.Contains(InjectionDefinition.PythonCommandPlaceholder, StringComparison.Ordinal)
-            || text.Contains(InjectionDefinition.BashCommandPlaceholder, StringComparison.Ordinal);
+        var hasCommand = text.Contains(InjectionDefinition.CommandPlaceholder, StringComparison.Ordinal);
         if (hasBeacon && beaconUrl is null)
         {
             throw new InvalidOperationException("The injection requires a beacon URL.");
+        }
+
+        if (hasCommand)
+        {
+            if (command is null)
+            {
+                throw new InvalidOperationException($"The injection requires a command. Call WithCommand().");
+            }
+
+            text = text.Replace(InjectionDefinition.CommandPlaceholder, ResolveCommand(command, marker, beaconUrl), StringComparison.Ordinal);
         }
 
         if (beaconUrl is not null)
@@ -60,9 +86,7 @@ internal static class InjectionObfuscator
             text = text.Replace(InjectionDefinition.BeaconPlaceholder, beaconUrl, StringComparison.Ordinal);
         }
 
-        var resolved = text.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal)
-            .Replace(InjectionDefinition.PythonCommandPlaceholder, $"python3 -c \"print('{marker}')\"", StringComparison.Ordinal)
-            .Replace(InjectionDefinition.BashCommandPlaceholder, $"printf '%s\\n' '{marker}'", StringComparison.Ordinal);
+        var resolved = text.Replace(InjectionDefinition.MarkerPlaceholder, marker, StringComparison.Ordinal);
         if (difficulty == Difficulty.Plain)
         {
             return new(ObfuscationTechnique.None, [resolved]);

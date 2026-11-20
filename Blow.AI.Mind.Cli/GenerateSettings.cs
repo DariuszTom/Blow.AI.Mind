@@ -42,6 +42,10 @@ public sealed class GenerateSettings : CommandSettings
     [Description("Base URL on a host you control for {{beacon}} injections, e.g. https://files.example.com/b.")]
     public string? Beacon { get; init; }
 
+    [CommandOption("--command <CODE>")]
+    [Description("Code planted by {{command}} injections. Must contain {{marker}} or {{beacon}}. It is not executed.")]
+    public string? Command { get; init; }
+
     public override ValidationResult Validate()
     {
         if (Injection && Injections)
@@ -52,6 +56,13 @@ public sealed class GenerateSettings : CommandSettings
         if (Beacon is not null && !Uri.TryCreate(Beacon, UriKind.Absolute, out _))
         {
             return ValidationResult.Error($"Invalid beacon URL '{Beacon}'.");
+        }
+
+        if (Command is not null && (string.IsNullOrWhiteSpace(Command)
+            || Command.Contains("{{command}}", StringComparison.Ordinal)
+            || (!Command.Contains("{{marker}}", StringComparison.Ordinal) && !Command.Contains("{{beacon}}", StringComparison.Ordinal))))
+        {
+            return ValidationResult.Error("Command must contain {{marker}} or {{beacon}}, and must not contain {{command}}.");
         }
 
         var invalid = Placements.FirstOrDefault(p => !string.Equals(p, "All", StringComparison.OrdinalIgnoreCase)

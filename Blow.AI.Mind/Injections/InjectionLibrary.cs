@@ -85,10 +85,9 @@ public static class InjectionLibrary
         if (string.IsNullOrWhiteSpace(definition.Text)
             || (!definition.Text.Contains(InjectionDefinition.MarkerPlaceholder, StringComparison.Ordinal)
                 && !definition.RequiresBeacon
-                && !definition.Text.Contains(InjectionDefinition.PythonCommandPlaceholder, StringComparison.Ordinal)
-                && !definition.Text.Contains(InjectionDefinition.BashCommandPlaceholder, StringComparison.Ordinal)))
+                && !definition.RequiresCommand))
         {
-            errors.Add($"'text' must contain {InjectionDefinition.MarkerPlaceholder}, {InjectionDefinition.BeaconPlaceholder}, {InjectionDefinition.PythonCommandPlaceholder}, or {InjectionDefinition.BashCommandPlaceholder}");
+            errors.Add($"'text' must contain {InjectionDefinition.MarkerPlaceholder}, {InjectionDefinition.BeaconPlaceholder}, or {InjectionDefinition.CommandPlaceholder}");
         }
 
         if (definition.Placements is null || definition.Placements.Count == 0)

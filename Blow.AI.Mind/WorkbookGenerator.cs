@@ -41,6 +41,7 @@ public sealed class WorkbookGenerator
     private bool _encrypted;
     private IReadOnlyList<string> _emailDomains = [];
     private Uri? _beaconBase;
+    private string? _command;
     private ILogger _logger = NullLogger.Instance;
 
     private WorkbookGenerator()
@@ -134,6 +135,31 @@ public sealed class WorkbookGenerator
     public WorkbookGenerator WithBeacon(Uri baseUrl)
     {
         _beaconBase = Beacon.NormalizeBase(baseUrl);
+        return this;
+    }
+
+    /// <summary>
+    /// Enables <c>{{command}}</c> injections by planting <paramref name="code"/> as text. The package does not execute it.
+    /// The code must contain <see cref="InjectionDefinition.MarkerPlaceholder"/>, <see cref="InjectionDefinition.BeaconPlaceholder"/>, or both;
+    /// each is replaced per injection. A beacon placeholder also requires <see cref="WithBeacon"/>. Without a command, such definitions are skipped.
+    /// The expanded code is recorded in <see cref="InjectionRecord.Command"/>.
+    /// </summary>
+    public WorkbookGenerator WithCommand(string code)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        if (code.Contains(InjectionDefinition.CommandPlaceholder, StringComparison.Ordinal))
+        {
+            throw new ArgumentException($"Command must not contain {InjectionDefinition.CommandPlaceholder}.", nameof(code));
+        }
+
+        if (!code.Contains(InjectionDefinition.MarkerPlaceholder, StringComparison.Ordinal)
+            && !code.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal))
+        {
+            throw new ArgumentException(
+                $"Command must contain {InjectionDefinition.MarkerPlaceholder} or {InjectionDefinition.BeaconPlaceholder}.", nameof(code));
+        }
+
+        _command = code;
         return this;
     }
 
@@ -231,15 +257,57 @@ public sealed class WorkbookGenerator
         var candidates = (_customInjections ?? InjectionLibrary.BuiltIn)
             .Where(d => d.Placements.Any(placements.Contains) && _injectionOptions.Matches(d))
             .ToList();
-        var matching = candidates.Where(d => _beaconBase is not null || !d.RequiresBeacon).ToList();
+        if (candidates.Any(d => d.RequiresCommand) && _command is not null && CommandNeedsBeacon && _beaconBase is null)
+        {
+            throw new InvalidOperationException($"The command contains {InjectionDefinition.BeaconPlaceholder}. Call WithBeacon().");
+        }
+
+        var matching = candidates.Where(IsEnabled).ToList();
         if (matching.Count == 0)
         {
             throw new InvalidOperationException(candidates.Count > 0
-                ? "The matching injection definitions require a beacon URL. Call WithBeacon()."
+                ? UnavailableMessage(candidates)
                 : "No injection definitions match the configured filters.");
         }
 
         return matching;
+    }
+
+    private bool CommandNeedsBeacon =>
+        _command?.Contains(InjectionDefinition.BeaconPlaceholder, StringComparison.Ordinal) == true;
+
+    private bool IsEnabled(InjectionDefinition definition)
+    {
+        if (definition.RequiresBeacon && _beaconBase is null)
+        {
+            return false;
+        }
+
+        if (!definition.RequiresCommand)
+        {
+            return true;
+        }
+
+        return _command is not null && (_beaconBase is not null || !CommandNeedsBeacon);
+    }
+
+    private string UnavailableMessage(IReadOnlyList<InjectionDefinition> candidates)
+    {
+        var needsCommand = candidates.Any(d => d.RequiresCommand) && _command is null;
+        var needsBeacon = _beaconBase is null && candidates.Any(d => d.RequiresBeacon || (d.RequiresCommand && CommandNeedsBeacon));
+        if (needsCommand && needsBeacon)
+        {
+            return "The matching injection definitions require a command and a beacon URL. Call WithCommand() and WithBeacon().";
+        }
+
+        if (needsCommand)
+        {
+            return "The matching injection definitions require a command. Call WithCommand().";
+        }
+
+        return needsBeacon
+            ? "The matching injection definitions require a beacon URL. Call WithBeacon()."
+            : "No injection definitions match the configured filters.";
     }
 
     private string FileNameFor(Guid id) => $"{_template.Name.ToLowerInvariant()}-{id:N}.xlsx";
@@ -298,9 +366,13 @@ public sealed class WorkbookGenerator
         var planned = selected.Select(s =>
         {
             var marker = $"{InjectionDefinition.MarkerPrefix}{Guid.NewGuid():N}".ToUpperInvariant();
-            var beaconUrl = s.Definition.RequiresBeacon ? Beacon.CreateUrl(_beaconBase!, marker) : null;
-            return new PlannedInjection(s.Definition, s.Placement, marker, beaconUrl,
-                InjectionObfuscator.Apply(s.Definition.Text, marker, beaconUrl?.AbsoluteUri, _injectionOptions.Difficulty, random));
+            var includeBeacon = s.Definition.RequiresBeacon || (s.Definition.RequiresCommand && CommandNeedsBeacon);
+            var beaconUrl = includeBeacon ? Beacon.CreateUrl(_beaconBase!, marker) : null;
+            var command = s.Definition.RequiresCommand
+                ? InjectionObfuscator.ResolveCommand(_command!, marker, beaconUrl?.AbsoluteUri)
+                : null;
+            return new PlannedInjection(s.Definition, s.Placement, marker, beaconUrl, command,
+                InjectionObfuscator.Apply(s.Definition.Text, marker, beaconUrl?.AbsoluteUri, _command, _injectionOptions.Difficulty, random));
         }).ToList();
 
         return new InjectionPlanter(workbook, target, random).Plant(planned, _injectionOptions.Difficulty);

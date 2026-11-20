@@ -10,8 +10,7 @@ public class InjectionTests
     public void Built_in_library_is_valid_and_non_empty()
     {
         InjectionLibrary.BuiltIn.Count.ShouldBeGreaterThanOrEqualTo(3);
-        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder) || d.RequiresBeacon
-            || d.Text.Contains(InjectionDefinition.PythonCommandPlaceholder) || d.Text.Contains(InjectionDefinition.BashCommandPlaceholder));
+        InjectionLibrary.BuiltIn.ShouldAllBe(d => d.Text.Contains(InjectionDefinition.MarkerPlaceholder) || d.RequiresBeacon || d.RequiresCommand);
         InjectionLibrary.BuiltIn.Select(d => d.Id).ShouldBeUnique();
     }
 
@@ -39,7 +38,7 @@ public class InjectionTests
         var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(40).WithInjections());
 
         file.Injections.Select(i => i.InjectionId).Order()
-            .ShouldBe(InjectionLibrary.BuiltIn.Where(d => !d.RequiresBeacon).Select(d => d.Id).Order());
+            .ShouldBe(InjectionLibrary.BuiltIn.Where(d => !d.RequiresBeacon && !d.RequiresCommand).Select(d => d.Id).Order());
         file.Injections.ShouldAllBe(i => i.BeaconUrl == null);
         file.Injections.Select(i => i.Marker).ShouldBeUnique();
         file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();

@@ -41,6 +41,7 @@ public class CryptographicRandomTests
     {
         var count = InjectionLibrary.BuiltIn.Count;
         var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(count).WithBeacon(new Uri("https://beacon.example.test/"))
+            .WithCommand("echo {{marker}}")
             .WithInjections(options => options.WithDifficulty(Difficulty.Plain)));
         file.Injections.Count.ShouldBe(count);
         file.Injections.SelectMany(i => i.Locations).ShouldBeUnique();

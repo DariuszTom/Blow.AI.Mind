@@ -81,7 +81,7 @@ public class PlacementTests
         var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(40)
             .WithInjections(o => o.InPlacement(placements)));
 
-        file.Injections.Count.ShouldBe(InjectionLibrary.BuiltIn.Count(d => !d.RequiresBeacon) * placements.Length);
+        file.Injections.Count.ShouldBe(InjectionLibrary.BuiltIn.Count(d => !d.RequiresBeacon && !d.RequiresCommand) * placements.Length);
         file.Injections.GroupBy(i => i.Placement).Select(g => g.Key).Order().ShouldBe(placements.Order());
         file.Injections.Select(i => i.Marker).ShouldBeUnique();
     }
