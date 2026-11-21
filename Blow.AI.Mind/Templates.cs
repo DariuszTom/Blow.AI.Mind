@@ -1,5 +1,5 @@
-using System.Reflection;
 using Blow.AI.Mind.Templating;
+using System.Reflection;
 
 namespace Blow.AI.Mind;
 

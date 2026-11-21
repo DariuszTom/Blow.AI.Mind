@@ -1,6 +1,6 @@
-using System.Reflection;
-using Bogus;
 using Blow.AI.Mind.Injections;
+using Bogus;
+using System.Reflection;
 
 namespace Blow.AI.Mind.Tests;
 

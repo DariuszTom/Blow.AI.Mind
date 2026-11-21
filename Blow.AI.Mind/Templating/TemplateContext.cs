@@ -1,4 +1,3 @@
-using Bogus;
 using Blow.AI.Mind.FakeData;
 
 namespace Blow.AI.Mind.Templating;

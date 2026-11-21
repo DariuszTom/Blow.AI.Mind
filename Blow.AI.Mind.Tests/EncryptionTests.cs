@@ -1,5 +1,5 @@
-using System.Text.Json;
 using Blow.AI.Mind.Templating;
+using System.Text.Json;
 
 namespace Blow.AI.Mind.Tests;
 

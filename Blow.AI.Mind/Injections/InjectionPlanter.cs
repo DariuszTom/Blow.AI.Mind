@@ -1,4 +1,3 @@
-using Bogus;
 using Blow.AI.Mind.Templating;
 using ClosedXML.Excel;
 

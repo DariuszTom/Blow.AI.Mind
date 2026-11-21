@@ -1,6 +1,3 @@
-using DocumentFormat.OpenXml.Office.Word;
-using System.Security.Cryptography;
-
 namespace Blow.AI.Mind.Encryption;
 
 /// <summary>Cryptographically random passwords for encrypted workbooks.</summary>
