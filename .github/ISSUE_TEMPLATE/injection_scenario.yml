@@ -1,0 +1,53 @@
+name: New injection scenario
+description: Propose a new built-in prompt-injection scenario
+labels: [ "injection-scenario" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Scenarios live in `Blow.AI.Mind/Injections/<category>/<id>.json` and must follow `schema.json`.
+        Do not include real secrets, third-party URLs, or instructions that send data anywhere other than `{{beacon}}`.
+  - type: input
+    id: id
+    attributes:
+      label: Id
+      placeholder: e.g. ignore-previous-de
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - instruction-override
+        - exfiltration
+        - beacon
+        - code-execution
+        - policy-resilience
+        - new category (explain below)
+    validations:
+      required: true
+  - type: textarea
+    id: definition
+    attributes:
+      label: JSON definition
+      render: json
+      value: |
+        {
+          "$schema": "../schema.json",
+          "id": "",
+          "category": "",
+          "language": "en",
+          "text": "... {{marker}} ...",
+          "placements": [ "Cell", "Comment", "HiddenCell", "HiddenSheet", "DocumentProperties", "DefinedName" ],
+          "tags": []
+        }
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: What does it test?
+      description: Which agent behaviour does this scenario detect, and how does the marker prove it?
+    validations:
+      required: true

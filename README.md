@@ -93,3 +93,7 @@ Workbooks are created in memory using ClosedXML; large row counts can require su
 ### CI and releases
 
 GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing requires the `NUGET_API_KEY` repository secret.
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
