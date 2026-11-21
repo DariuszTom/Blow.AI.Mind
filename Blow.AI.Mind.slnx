@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path="CONTRIBUTING.md" />
+    <File Path="coverage.runsettings" />
     <File Path="global.json" />
     <File Path="README.md" />
     <File Path="SECURITY.md" />
@@ -18,6 +19,7 @@
   </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github/workflows/codeql.yml" />
+    <File Path=".github/workflows/coverage.yml" />
     <File Path=".github/workflows/dotnet.yml" />
     <File Path=".github/workflows/release.yml" />
     <File Path=".github/workflows/secrets-scan.yml" />

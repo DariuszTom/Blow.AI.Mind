@@ -13,6 +13,12 @@ Thanks for your interest in improving Blow.AI.Mind! Bug reports, new fake-data g
    dotnet test Blow.AI.Mind.Tests
    ```
 
+   Code coverage (Cobertura report in `coverage/`):
+
+   ```shell
+   dotnet test Blow.AI.Mind.Tests --settings coverage.runsettings --collect "Code Coverage" --results-directory coverage
+   ```
+
 3. Try the CLI:
 
    ```shell

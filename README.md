@@ -2,6 +2,7 @@
 
 [![.NET](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml)
 [![CodeQL](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml)
+[![Code Coverage](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/coverage.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/coverage.yml)
 [![Release](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml)
 [![Secrets Scan](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml)
 [![NuGet](https://img.shields.io/nuget/v/Blow.AI.Mind.svg?label=NuGet)](https://www.nuget.org/packages/Blow.AI.Mind)
@@ -92,7 +93,7 @@ Workbooks are created in memory using ClosedXML; large row counts can require su
 
 ### CI and releases
 
-GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing requires the `NUGET_API_KEY` repository secret.
+GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `coverage.yml` collects code coverage (HTML report artifact, job summary and PR comment; optional Codecov upload when the `CODECOV_TOKEN` secret is set); `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing requires the `NUGET_API_KEY` repository secret.
 
 ## Contributing
 
