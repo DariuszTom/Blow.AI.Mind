@@ -1,0 +1,50 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [ "bug" ]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Code snippet or CLI command that reproduces the problem.
+      render: csharp
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: e.g. 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Library (Blow.AI.Mind)
+        - CLI (Blow.AI.Mind.Cli)
+        - Injection scenarios
+        - Encryption
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, .NET version, Excel / reader used to open the file.
+  - type: checkboxes
+    id: secrets
+    attributes:
+      label: Confirmation
+      options:
+        - label: I removed any real secrets, passwords or personal data from this report.
+          required: true

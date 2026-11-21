@@ -1,6 +1,20 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="SECURITY.md" />
+  </Folder>
   <Folder Name="/.github/">
     <File Path=".github/dependabot.yml" />
+    <File Path=".github/pull_request_template.md" />
+  </Folder>
+  <Folder Name="/.github/ISSUE_TEMPLATE/">
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/config.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/injection_scenario.yml" />
   </Folder>
   <Folder Name="/.github/workflows/">
     <File Path=".github/workflows/codeql.yml" />
