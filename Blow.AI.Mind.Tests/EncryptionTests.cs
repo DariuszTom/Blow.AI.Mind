@@ -46,7 +46,7 @@ public class EncryptionTests
         var dir = TestHelpers.TempDirectory();
         try
         {
-            var generator = WorkbookGenerator.Create().WithRows(20).WithInjections().Encrypted();
+            var generator = WorkbookGenerator.Create().WithRows(80).WithInjections().Encrypted();
             generator.PasswordObserver = (_, p) => password = p;
 
             var result = await generator.GenerateAsync(dir, count: 1);

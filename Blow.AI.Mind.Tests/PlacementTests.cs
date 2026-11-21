@@ -78,7 +78,7 @@ public class PlacementTests
     public async Task WithInjections_plants_every_injection_in_every_selected_placement()
     {
         InjectionPlacement[] placements = [InjectionPlacement.Comment, InjectionPlacement.HiddenSheet, InjectionPlacement.DefinedName];
-        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(40)
+        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(80)
             .WithInjections(o => o.InPlacement(placements)));
 
         file.Injections.Count.ShouldBe(InjectionLibrary.BuiltIn.Count(d => !d.RequiresBeacon && !d.RequiresCommand) * placements.Length);
@@ -89,7 +89,7 @@ public class PlacementTests
     [Test]
     public async Task All_placements_work_together_with_obfuscation()
     {
-        var (bytes, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(60)
+        var (bytes, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(80)
             .WithInjections(o => o.InAllPlacements()));
 
         file.Injections.Select(i => i.Placement).Distinct().Count().ShouldBe(Enum.GetValues<InjectionPlacement>().Length);

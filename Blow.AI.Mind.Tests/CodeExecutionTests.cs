@@ -29,7 +29,7 @@ public class CodeExecutionTests
     [Test]
     public async Task Command_definitions_are_skipped_without_a_command()
     {
-        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(20).WithInjections());
+        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(80).WithInjections());
         file.Injections.ShouldAllBe(i => i.Category != "code-execution" && i.Command == null);
     }
 

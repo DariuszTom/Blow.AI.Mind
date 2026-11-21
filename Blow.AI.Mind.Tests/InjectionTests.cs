@@ -35,7 +35,7 @@ public class InjectionTests
     [Test]
     public async Task WithInjections_plants_all_matching_injections()
     {
-        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(40).WithInjections());
+        var (_, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(80).WithInjections());
 
         file.Injections.Select(i => i.InjectionId).Order()
             .ShouldBe(InjectionLibrary.BuiltIn.Where(d => !d.RequiresBeacon && !d.RequiresCommand).Select(d => d.Id).Order());
