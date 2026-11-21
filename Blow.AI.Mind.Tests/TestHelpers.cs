@@ -1,6 +1,6 @@
+using ExcelDataReader;
 using System.Data;
 using System.Text;
-using ExcelDataReader;
 
 namespace Blow.AI.Mind.Tests;
 

@@ -1,6 +1,6 @@
-using System.Text;
 using Blow.AI.Mind.Injections;
 using Blow.AI.Mind.Templating;
+using System.Text;
 
 namespace Blow.AI.Mind.Tests;
 

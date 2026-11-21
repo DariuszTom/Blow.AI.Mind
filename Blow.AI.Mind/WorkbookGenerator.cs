@@ -1,4 +1,3 @@
-using Bogus;
 using Blow.AI.Mind.Encryption;
 using Blow.AI.Mind.Injections;
 using Blow.AI.Mind.Templating;

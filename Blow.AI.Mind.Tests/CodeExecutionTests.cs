@@ -1,7 +1,7 @@
-using System.Text;
-using Bogus;
 using Blow.AI.Mind.Injections;
+using Bogus;
 using ClosedXML.Excel;
+using System.Text;
 
 namespace Blow.AI.Mind.Tests;
 

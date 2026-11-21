@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using Blow.AI.Mind.Injections;
+﻿using Blow.AI.Mind.Injections;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using System.ComponentModel;
 
 public sealed class GenerateSettings : CommandSettings
 {

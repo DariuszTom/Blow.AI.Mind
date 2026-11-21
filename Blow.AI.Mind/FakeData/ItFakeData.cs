@@ -1,6 +1,3 @@
-using System.Security.Cryptography;
-using Bogus;
-
 namespace Blow.AI.Mind.FakeData;
 
 /// <summary>
