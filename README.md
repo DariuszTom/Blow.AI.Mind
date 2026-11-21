@@ -1,5 +1,12 @@
 # Blow.AI.Mind
 
+[![.NET](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml)
+[![Release](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml)
+[![Secrets Scan](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml)
+[![NuGet](https://img.shields.io/nuget/v/Blow.AI.Mind.svg?label=NuGet)](https://www.nuget.org/packages/Blow.AI.Mind)
+[![NuGet CLI](https://img.shields.io/nuget/v/Blow.AI.Mind.Cli.svg?label=NuGet%20CLI)](https://www.nuget.org/packages/Blow.AI.Mind.Cli)
+
 Blow.AI.Mind generates fictional Excel workbooks for testing AI agents. The `Templates.UserSecrets` template contains user accounts, fictional password hashes, and clearly marked fake API keys and tokens.
 
 ```csharp
@@ -82,3 +89,7 @@ Data generation, injection selection, markers, and passwords use a cryptographic
 CLI: `dotnet run --project Blow.AI.Mind.Cli -- generate --output out --rows 100 --locale en --injection`. Optional arguments include `--injections` instead of `--injection`, `--placement` (repeatable, or `All`), `--email-domain`, `--beacon <URL>`, `--command <CODE>`, `--encrypted`, `--count`, and `--locale`.
 
 Workbooks are created in memory using ClosedXML; large row counts can require substantial memory. Benchmark results and compatibility with specific Excel versions require separate verification.
+
+### CI and releases
+
+GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing requires the `NUGET_API_KEY` repository secret.

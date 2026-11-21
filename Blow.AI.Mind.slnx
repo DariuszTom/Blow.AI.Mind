@@ -1,4 +1,13 @@
-﻿<Solution>
+<Solution>
+  <Folder Name="/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/.github/workflows/">
+    <File Path=".github/workflows/codeql.yml" />
+    <File Path=".github/workflows/dotnet.yml" />
+    <File Path=".github/workflows/release.yml" />
+    <File Path=".github/workflows/secrets-scan.yml" />
+  </Folder>
   <Project Path="Blow.AI.Mind/Blow.AI.Mind.csproj" />
   <Project Path="Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj" />
   <Project Path="Blow.AI.Mind.Benchmarks/Blow.AI.Mind.Benchmarks.csproj" />

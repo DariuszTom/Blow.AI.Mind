@@ -1,0 +1,63 @@
+# Publishes Blow.AI.Mind and Blow.AI.Mind.Cli to NuGet.org when a version tag (e.g. v1.2.3) is pushed.
+# The package version is calculated by MinVer from the tag (MinVerTagPrefix = v).
+# Requires the repository secret NUGET_API_KEY.
+
+name: Release
+
+on:
+  push:
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to create the GitHub release
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore Blow.AI.Mind.slnx
+
+    - name: Build
+      run: dotnet build Blow.AI.Mind.slnx --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj --configuration Release --no-build
+
+    - name: Pack
+      run: |
+        dotnet pack Blow.AI.Mind/Blow.AI.Mind.csproj --configuration Release --no-build --output artifacts
+        dotnet pack Blow.AI.Mind.Cli/Blow.AI.Mind.Cli.csproj --configuration Release --no-build --output artifacts
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: artifacts/*
+
+    - name: Publish to NuGet.org
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Create GitHub release
+      if: startsWith(github.ref, 'refs/tags/v')
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh release create "$GITHUB_REF_NAME" artifacts/* --title "$GITHUB_REF_NAME" --generate-notes

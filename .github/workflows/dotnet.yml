@@ -1,0 +1,81 @@
+# Builds, tests and packs the solution.
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    name: Build & test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # MinVer needs tags and history to calculate the version
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore Blow.AI.Mind.slnx
+
+    - name: Build
+      run: dotnet build Blow.AI.Mind.slnx --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ matrix.os }}
+        path: TestResults
+        if-no-files-found: ignore
+
+  pack:
+    name: Pack
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Pack library
+      run: dotnet pack Blow.AI.Mind/Blow.AI.Mind.csproj --configuration Release --output artifacts
+
+    - name: Pack CLI tool
+      run: dotnet pack Blow.AI.Mind.Cli/Blow.AI.Mind.Cli.csproj --configuration Release --output artifacts
+
+    - name: Upload packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: artifacts/*
