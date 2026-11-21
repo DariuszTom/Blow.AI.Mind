@@ -2,24 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>blow-ai-mind</ToolCommandName>
     <PackageId>Blow.AI.Mind.Cli</PackageId>
     <Description>Command line tool generating fictional Excel workbooks with prompt-injection scenarios and encryption.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <MinVerTagPrefix>v</MinVerTagPrefix>
-    <Authors>Dariusz Tomczak</Authors>
-    <Copyright>Copyright (c) Dariusz Tomczak</Copyright>
     <PackageTags>excel;xlsx;fake-data;prompt-injection;ai;testing;llm;security;dotnet-tool</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/DariuszTom/Blow.AI.Mind</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/DariuszTom/Blow.AI.Mind</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
 
     <!-- Package size: English-only satellite resources, no XML docs from referenced assemblies, embedded PDB. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -28,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MinVer" Version="8.0.0" PrivateAssets="all" />
-    <PackageReference Include="Spectre.Console" Version="0.57.2" />
-    <PackageReference Include="Spectre.Console.Cli" Version="0.57.2" />
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+    <PackageReference Include="Spectre.Console" />
+    <PackageReference Include="Spectre.Console.Cli" />
   </ItemGroup>
 
   <ItemGroup>

@@ -49,6 +49,9 @@ jobs:
     - name: Test
       run: dotnet test Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj --configuration Release --no-build --verbosity normal --logger trx --results-directory TestResults
 
+    - name: Smoke test CLI
+      run: dotnet run --project Blow.AI.Mind.Cli --configuration Release --no-build -- generate --output smoke --count 2 --rows 20 --injection --encrypted
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4

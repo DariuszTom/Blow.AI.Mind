@@ -52,6 +52,8 @@ Injection scenarios are plain JSON files in `Blow.AI.Mind/Injections/<category>/
 - Never log, store or return generated workbook passwords.
 - Fake secrets must keep a clearly fictional prefix (e.g. `FAKE-`, `bam_test_`).
 - Add or update tests for behaviour changes.
+- Shared build settings and package metadata live in `Directory.Build.props`. Package versions are managed centrally in `Directory.Packages.props`, so add `<PackageReference Include="..." />` without a `Version`.
+- CI treats warnings as errors and also runs the CLI as a smoke test.
 
 ## Pull requests
 
