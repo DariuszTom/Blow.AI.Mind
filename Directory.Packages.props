@@ -8,7 +8,7 @@
   <ItemGroup Label="Library">
     <PackageVersion Include="Bogus" Version="35.6.5" />
     <PackageVersion Include="ClosedXML" Version="0.105.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
     <PackageVersion Include="MinVer" Version="8.0.0" />
     <PackageVersion Include="OpenMcdf" Version="3.4.0" />
   </ItemGroup>
