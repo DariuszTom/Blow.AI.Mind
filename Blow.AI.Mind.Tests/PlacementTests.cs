@@ -70,7 +70,7 @@ public class PlacementTests
             record.Sheet.ShouldBeNull();
             var name = record.Locations.ShouldHaveSingleItem();
             wb.DefinedNames.TryGetValue(name, out var definedName).ShouldBeTrue();
-            definedName!.RefersTo.ShouldContain(record.Marker);
+            DecodeFormulaLiteral(definedName!.RefersTo).ShouldContain(record.Marker);
         }
     }
 
@@ -139,6 +139,13 @@ public class PlacementTests
     }
 
     [Test]
+    public void DecodeFormulaLiteral_reverses_ToFormulaLiteral()
+    {
+        var text = new string('a', 250) + "BAM-\"&\"0123456789" + new string('b', 300);
+        DecodeFormulaLiteral(InjectionPlanter.ToFormulaLiteral(text)).ShouldBe(text);
+    }
+
+    [Test]
     public void Undefined_placement_throws() =>
         Should.Throw<ArgumentOutOfRangeException>(() => new InjectionOptions().InPlacement((InjectionPlacement)99));
 
@@ -149,5 +156,42 @@ public class PlacementTests
         var record = file.Injections.ShouldHaveSingleItem();
         record.Placement.ShouldBe(placement);
         return (new XLWorkbook(new MemoryStream(bytes)), record);
+    }
+
+    /// <summary>Evaluates a <c>="..."&amp;"..."</c> formula so markers split across literal chunks can be matched.</summary>
+    private static string DecodeFormulaLiteral(string formula)
+    {
+        var span = formula.AsSpan().TrimStart('=');
+        var result = new System.Text.StringBuilder();
+        var i = 0;
+        while (i < span.Length)
+        {
+            span[i].ShouldBe('"');
+            i++;
+            while (true)
+            {
+                if (span[i] == '"')
+                {
+                    if (i + 1 < span.Length && span[i + 1] == '"')
+                    {
+                        result.Append('"');
+                        i += 2;
+                        continue;
+                    }
+
+                    i++;
+                    break;
+                }
+
+                result.Append(span[i++]);
+            }
+
+            if (i < span.Length)
+            {
+                span[i++].ShouldBe('&');
+            }
+        }
+
+        return result.ToString();
     }
 }
