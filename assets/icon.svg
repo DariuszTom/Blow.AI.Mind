@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Blow.AI.Mind</title>
+  <desc id="desc">A spreadsheet with a neural network overlay and a burst marking an injected instruction.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="sheet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22C55E"/>
+      <stop offset="1" stop-color="#15803D"/>
+    </linearGradient>
+    <linearGradient id="burst" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBBF24"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="24" fill="url(#bg)"/>
+
+  <!-- Spreadsheet -->
+  <rect x="18" y="26" width="76" height="80" rx="8" fill="url(#sheet)"/>
+  <rect x="18" y="26" width="76" height="16" rx="8" fill="#166534"/>
+  <rect x="18" y="34" width="76" height="8" fill="#166534"/>
+  <g stroke="#DCFCE7" stroke-opacity="0.55" stroke-width="2">
+    <line x1="18" y1="58" x2="94" y2="58"/>
+    <line x1="18" y1="74" x2="94" y2="74"/>
+    <line x1="18" y1="90" x2="94" y2="90"/>
+    <line x1="43" y1="42" x2="43" y2="106"/>
+    <line x1="69" y1="42" x2="69" y2="106"/>
+  </g>
+
+  <!-- Neural network ("mind") -->
+  <g stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round">
+    <line x1="31" y1="50" x2="56" y2="66"/>
+    <line x1="31" y1="82" x2="56" y2="66"/>
+    <line x1="56" y1="66" x2="81" y2="50"/>
+    <line x1="56" y1="66" x2="81" y2="82"/>
+    <line x1="31" y1="50" x2="31" y2="82"/>
+    <line x1="56" y1="66" x2="56" y2="98"/>
+    <line x1="31" y1="82" x2="56" y2="98"/>
+    <line x1="81" y1="82" x2="56" y2="98"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#14532D" stroke-width="2">
+    <circle cx="31" cy="50" r="5"/>
+    <circle cx="31" cy="82" r="5"/>
+    <circle cx="56" cy="98" r="5"/>
+    <circle cx="81" cy="50" r="5"/>
+    <circle cx="81" cy="82" r="5"/>
+  </g>
+  <circle cx="56" cy="66" r="7" fill="#FBBF24" stroke="#14532D" stroke-width="2"/>
+
+  <!-- Burst ("blow") marking the injected instruction -->
+  <g transform="translate(94 34)">
+    <path d="M0 -24 L6 -9 L21 -15 L12 -2 L24 6 L9 8 L10 23 L0 12 L-10 23 L-9 8 L-24 6 L-12 -2 L-21 -15 L-6 -9 Z"
+          fill="url(#burst)" stroke="#0F172A" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="-2.5" y="-10" width="5" height="13" rx="2.5" fill="#0F172A"/>
+    <circle cx="0" cy="8" r="3" fill="#0F172A"/>
+  </g>
+</svg>
