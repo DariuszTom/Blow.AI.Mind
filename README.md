@@ -94,7 +94,7 @@ Workbooks are created in memory using ClosedXML; large row counts can require su
 
 ### CI and releases
 
-GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `coverage.yml` collects code coverage (HTML report artifact, job summary and PR comment; optional Codecov upload when the `CODECOV_TOKEN` secret is set); `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing requires the `NUGET_API_KEY` repository secret.
+GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `coverage.yml` collects code coverage (HTML report artifact, job summary and PR comment; optional Codecov upload when the `CODECOV_TOKEN` secret is set); `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing uses NuGet.org Trusted Publishing (OIDC, no API key): it requires a Trusted Publishing policy on nuget.org (repository `DariuszTom/Blow.AI.Mind`, workflow file `release.yml`) and the `NUGET_USER` repository secret with the nuget.org profile name.
 
 ## Contributing
 
