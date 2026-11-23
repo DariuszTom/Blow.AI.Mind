@@ -28,6 +28,7 @@
     <EmbeddedResource Include="Injections\**\*.json" Exclude="Injections\schema.json" LogicalName="Blow.AI.Mind.Injections.%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="Injections\schema.json" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\assets\icon.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
