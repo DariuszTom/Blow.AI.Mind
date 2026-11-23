@@ -18,7 +18,6 @@ using Blow.AI.Mind;
 var result = await WorkbookGenerator.Create()
     .WithTemplate(Templates.UserSecrets)
     .WithRows(100)
-    .WithLocale("pl")
     .WithInjection() // One random injection; WithInjections() selects all matching injections.
     .GenerateAsync("out", count: 2);
 ```
