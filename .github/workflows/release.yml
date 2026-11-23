@@ -1,6 +1,8 @@
 # Publishes Blow.AI.Mind and Blow.AI.Mind.Cli to NuGet.org when a version tag (e.g. v1.2.3) is pushed.
 # The package version is calculated by MinVer from the tag (MinVerTagPrefix = v).
-# Requires the repository secret NUGET_API_KEY.
+# Uses NuGet.org Trusted Publishing (OIDC): requires a Trusted Publishing policy on nuget.org for
+# DariuszTom/Blow.AI.Mind with workflow file release.yml, and the repository secret NUGET_USER
+# (nuget.org profile name, not e-mail).
 
 name: Release
 
@@ -11,6 +13,7 @@ on:
 
 permissions:
   contents: write # needed to create the GitHub release
+  id-token: write # needed for NuGet Trusted Publishing (OIDC)
 
 env:
   DOTNET_NOLOGO: true
@@ -50,10 +53,17 @@ jobs:
         name: nuget-packages
         path: artifacts/*
 
+    - name: NuGet login (OIDC → temporary API key)
+      if: startsWith(github.ref, 'refs/tags/v')
+      id: nuget-login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
     - name: Publish to NuGet.org
       if: startsWith(github.ref, 'refs/tags/v')
       env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
       run: dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Create GitHub release
