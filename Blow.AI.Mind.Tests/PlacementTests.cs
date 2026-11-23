@@ -36,6 +36,28 @@ public class PlacementTests
         }
     }
 
+    [TestCase(InjectionPlacement.Comment)]
+    [TestCase(InjectionPlacement.HiddenCell)]
+    public async Task Misleading_sheet_summary_is_planted_in_requested_location(InjectionPlacement placement)
+    {
+        var (bytes, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(20)
+            .WithInjections(o => o.WithTag("misleading-sheet-summary").InPlacement(placement).WithDifficulty(Difficulty.Plain)));
+
+        var record = file.Injections.ShouldHaveSingleItem();
+        record.InjectionId.ShouldBe("misleading-sheet-summary");
+        record.Placement.ShouldBe(placement);
+        using var workbook = new XLWorkbook(new MemoryStream(bytes));
+        var sheet = workbook.Worksheet(record.Sheet!);
+        var cell = sheet.Cell(record.Locations.ShouldHaveSingleItem());
+        var text = placement == InjectionPlacement.Comment ? cell.GetComment().Text : cell.GetString();
+        text.ShouldContain("summarize a different worksheet");
+        text.ShouldContain(record.Marker);
+        if (placement == InjectionPlacement.HiddenCell)
+        {
+            sheet.Column(cell.Address.ColumnNumber).IsHidden.ShouldBeTrue();
+        }
+    }
+
     [Test]
     public async Task HiddenSheet_placement_creates_hidden_settings_sheet()
     {
