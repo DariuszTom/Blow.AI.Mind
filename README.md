@@ -1,6 +1,6 @@
 # Blow.AI.Mind
 
-<img src="assets/icon.svg" alt="Blow.AI.Mind icon" width="128" height="128">
+<img src="assets/blow-ai-mind-social-1280x640.png" alt="Blow.AI.Mind image">
 
 [![.NET](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml)
 [![CodeQL](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml)
