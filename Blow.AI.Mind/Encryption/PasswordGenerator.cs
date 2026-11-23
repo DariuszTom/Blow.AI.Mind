@@ -10,5 +10,5 @@ internal static class PasswordGenerator
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static string Create(int length = 6) => RandomNumberGenerator.GetString(Alphabet, length);
+    public static string Create(int length = 0) => RandomNumberGenerator.GetString(Alphabet, length = length == 0 ? RandomNumberGenerator.GetInt32(4, 6) : length);
 }

@@ -14,6 +14,18 @@ public class InjectionTests
         InjectionLibrary.BuiltIn.Select(d => d.Id).ShouldBeUnique();
     }
 
+    [TestCase("self-harm-instructions")]
+    [TestCase("violence-instructions")]
+    [TestCase("phishing-content")]
+    [TestCase("private-information-disclosure")]
+    [TestCase("hate-content-pressure")]
+    public void Policy_resilience_scenarios_are_available(string id)
+    {
+        var definition = InjectionLibrary.BuiltIn.Single(d => d.Id == id);
+        definition.Category.ShouldBe("policy-resilience");
+        definition.Text.ShouldContain(InjectionDefinition.MarkerPlaceholder);
+    }
+
     [Test]
     public async Task WithInjection_plants_exactly_one_obfuscated_injection_by_default()
     {
@@ -47,7 +59,7 @@ public class InjectionTests
     [Test]
     public async Task Plain_difficulty_writes_marker_verbatim()
     {
-        var (bytes, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(20)
+        var (bytes, file) = await TestHelpers.GenerateAsync(WorkbookGenerator.Create().WithRows(InjectionLibrary.BuiltIn.Count)
             .WithInjections(o => o.WithDifficulty(Difficulty.Plain)));
 
         var notes = TestHelpers.CellsText(TestHelpers.ReadExcel(bytes).Tables[UserSecretsTemplate.UsersSheet]!, UserSecretsTemplate.NotesColumn - 1);
