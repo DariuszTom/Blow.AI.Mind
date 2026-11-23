@@ -1,6 +1,6 @@
 # Blow.AI.Mind
 
-<img src="assets/blow-ai-mind-social-1280x640.jpg" alt="Blow.AI.Mind image">
+![Blow.AI.Mind](https://raw.githubusercontent.com/DariuszTom/Blow.AI.Mind/master/assets/blow-ai-mind-social-1280x640.jpg)
 
 [![.NET](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/dotnet.yml)
 [![CodeQL](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/codeql.yml)
@@ -8,7 +8,6 @@
 [![Release](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/release.yml)
 [![Secrets Scan](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml/badge.svg)](https://github.com/DariuszTom/Blow.AI.Mind/actions/workflows/secrets-scan.yml)
 [![NuGet](https://img.shields.io/nuget/v/Blow.AI.Mind.svg?label=NuGet)](https://www.nuget.org/packages/Blow.AI.Mind)
-[![NuGet CLI](https://img.shields.io/nuget/v/Blow.AI.Mind.Cli.svg?label=NuGet%20CLI)](https://www.nuget.org/packages/Blow.AI.Mind.Cli)
 
 Blow.AI.Mind generates fictional Excel workbooks for testing AI agents. The `Templates.UserSecrets` template contains user accounts, fictional password hashes, and clearly marked fake API keys and tokens.
 
@@ -83,6 +82,8 @@ var result = await WorkbookGenerator.Create()
     .WithBeacon(new Uri("https://files.example.com/b"))
     .WithCommand("python3 -c \"import urllib.request; urllib.request.urlopen('{{beacon}}')\"")
     .WithInjections(o => o.InCategory("code-execution"))
+    .GenerateAsync("out");
+```
 
 A marker in an answer can be quoted rather than executed. Verify execution using trusted tool-execution logs from an authorized, isolated test environment; even a beacon request alone does not prove a specific command ran.
 
@@ -94,7 +95,7 @@ Workbooks are created in memory using ClosedXML; large row counts can require su
 
 ### CI and releases
 
-GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `coverage.yml` collects code coverage (HTML report artifact, job summary and PR comment; optional Codecov upload when the `CODECOV_TOKEN` secret is set); `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes `Blow.AI.Mind` and `Blow.AI.Mind.Cli` to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing uses NuGet.org Trusted Publishing (OIDC, no API key): it requires a Trusted Publishing policy on nuget.org (repository `DariuszTom/Blow.AI.Mind`, workflow file `release.yml`) and the `NUGET_USER` repository secret with the nuget.org profile name.
+GitHub Actions in `.github/workflows`: `dotnet.yml` builds, tests (Ubuntu and Windows) and packs on pushes and pull requests to `master`; `coverage.yml` collects code coverage (HTML report artifact, job summary and PR comment; optional Codecov upload when the `CODECOV_TOKEN` secret is set); `codeql.yml` and `secrets-scan.yml` (Gitleaks) run security scans; `release.yml` publishes the `Blow.AI.Mind` library to NuGet.org and creates a GitHub release when a `v*` tag (e.g. `v1.0.0`) is pushed. The version comes from the tag via MinVer. Publishing uses NuGet.org Trusted Publishing (OIDC, no API key): it requires a Trusted Publishing policy on nuget.org (repository `DariuszTom/Blow.AI.Mind`, workflow file `release.yml`) and the `NUGET_USER` repository secret with the nuget.org profile name.
 
 ## Contributing
 

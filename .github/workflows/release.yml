@@ -1,4 +1,4 @@
-# Publishes Blow.AI.Mind and Blow.AI.Mind.Cli to NuGet.org when a version tag (e.g. v1.2.3) is pushed.
+# Publishes Blow.AI.Mind to NuGet.org when a version tag (e.g. v1.2.3) is pushed.
 # The package version is calculated by MinVer from the tag (MinVerTagPrefix = v).
 # Uses NuGet.org Trusted Publishing (OIDC): requires a Trusted Publishing policy on nuget.org for
 # DariuszTom/Blow.AI.Mind with workflow file release.yml, and the repository secret NUGET_USER
@@ -43,9 +43,7 @@ jobs:
       run: dotnet test Blow.AI.Mind.Tests/Blow.AI.Mind.Tests.csproj --configuration Release --no-build
 
     - name: Pack
-      run: |
-        dotnet pack Blow.AI.Mind/Blow.AI.Mind.csproj --configuration Release --no-build --output artifacts
-        dotnet pack Blow.AI.Mind.Cli/Blow.AI.Mind.Cli.csproj --configuration Release --no-build --output artifacts
+      run: dotnet pack Blow.AI.Mind/Blow.AI.Mind.csproj --configuration Release --no-build --output artifacts
 
     - name: Upload packages
       uses: actions/upload-artifact@v7
