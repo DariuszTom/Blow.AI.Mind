@@ -16,6 +16,7 @@
     <Copyright>Copyright (c) Dariusz Tomczak</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/DariuszTom/Blow.AI.Mind</PackageProjectUrl>
     <RepositoryUrl>https://github.com/DariuszTom/Blow.AI.Mind</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
