@@ -2,11 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>blow-ai-mind</ToolCommandName>
-    <PackageId>Blow.AI.Mind.Cli</PackageId>
-    <Description>Command line tool generating fictional Excel workbooks with prompt-injection scenarios and encryption.</Description>
-    <PackageTags>excel;xlsx;fake-data;prompt-injection;ai;testing;llm;security;dotnet-tool</PackageTags>
+    <IsPackable>false</IsPackable>
 
     <!-- Package size: English-only satellite resources, no XML docs from referenced assemblies, embedded PDB. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
@@ -22,10 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Blow.AI.Mind\Blow.AI.Mind.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

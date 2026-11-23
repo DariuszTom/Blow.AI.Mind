@@ -12,6 +12,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Title>Blow.AI.Mind</Title>
+    <PackageIcon>icon.png</PackageIcon>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
@@ -28,6 +29,7 @@
     <EmbeddedResource Include="Injections\**\*.json" Exclude="Injections\schema.json" LogicalName="Blow.AI.Mind.Injections.%(RecursiveDir)%(Filename)%(Extension)" />
     <None Include="Injections\schema.json" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\assets\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
